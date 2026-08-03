@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A · Key — horizontal geometric key -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M24,54a14,14 0 1,0 28,0a14,14 0 1,0 -28,0M36,49h42v10h-8v8h-10v-8H36zM24,54a5.5,5.5 0 1,0 11,0a5.5,5.5 0 1,0 -11,0" />
+</vector>

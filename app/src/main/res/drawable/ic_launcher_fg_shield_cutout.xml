@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- H · Shield with lock-shaped cutout -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#1A6B5C"
+        android:fillType="evenOdd"
+        android:pathData="
+            M54,22
+            c16,7 30,9 30,9
+            v24
+            c0,20 -14,34 -30,40
+            C38,89 24,75 24,55
+            V31
+            s14,-2 30,-9
+            z
+            M46,48
+            v-5
+            c0,-4.42 3.58,-8 8,-8
+            s8,3.58 8,8
+            v5
+            h4
+            c2.2,0 4,1.8 4,4
+            v14
+            c0,2.2 -1.8,4 -4,4
+            H42
+            c-2.2,0 -4,-1.8 -4,-4
+            V52
+            c0,-2.2 1.8,-4 4,-4
+            h4
+            z
+            M50,48
+            h8
+            v-5
+            c0,-2.21 -1.79,-4 -4,-4
+            s-4,1.79 -4,4
+            v5
+            z" />
+</vector>

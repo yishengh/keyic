@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Keyic</string>
+
+    <!-- Common -->
+    <string name="action_save">Guardar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_edit">Editar</string>
+    <string name="action_back">Atrás</string>
+    <string name="action_next">Siguiente</string>
+    <string name="action_skip">Omitir</string>
+    <string name="action_continue">Continuar</string>
+    <string name="action_unlock">Desbloquear</string>
+    <string name="action_copy">Copiar</string>
+    <string name="action_add">Añadir</string>
+    <string name="action_remove">Quitar</string>
+    <string name="action_restore">Restaurar</string>
+    <string name="action_undo">Deshacer</string>
+    <string name="action_change">Cambiar</string>
+    <string name="action_export">Exportar</string>
+    <string name="action_lock_now">Bloquear ahora</string>
+    <string name="cd_lock_now">Bloquear ahora</string>
+    <string name="cd_favorite">Favorito</string>
+    <string name="cd_has_2fa">Tiene 2FA</string>
+    <string name="vault_default_name">Bóveda</string>
+    <string name="vault_default_numbered">Bóveda 1</string>
+
+    <!-- Tabs -->
+    <string name="tab_vault">Bóveda</string>
+    <string name="tab_auth">Auth</string>
+    <string name="tab_generator">Generador</string>
+    <string name="tab_security">Seguridad</string>
+    <string name="tab_settings">Ajustes</string>
+    <string name="fab_add_item">Añadir elemento</string>
+
+    <!-- Filters -->
+    <string name="filter_all">Todos</string>
+    <string name="filter_favorites">Favoritos</string>
+    <string name="filter_login">Inicio de sesión</string>
+    <string name="filter_note">Nota</string>
+    <string name="filter_card">Tarjeta</string>
+    <string name="filter_identity">Identidad</string>
+    <string name="filter_totp">TOTP</string>
+
+    <!-- Vault list -->
+    <string name="search_vault">Buscar en la bóveda…</string>
+    <string name="empty_vault_title">Aún no hay entradas</string>
+    <string name="empty_vault_subtitle">Añade un inicio de sesión, una nota o una tarjeta, o importa desde CSV / KeePass en Ajustes.</string>
+    <string name="no_matches">Sin coincidencias</string>
+    <string name="pad_select_entry">Selecciona una entrada para ver los detalles</string>
+    <string name="no_username">Sin nombre de usuario</string>
+    <string name="secure_note">Nota segura</string>
+    <string name="type_login">Inicio de sesión</string>
+    <string name="type_note">Nota segura</string>
+    <string name="type_card">Tarjeta</string>
+    <string name="type_identity">Identidad</string>
+
+    <!-- Lock / Setup -->
+    <string name="setup_title">Keyic</string>
+    <string name="setup_subtitle">Crea una contraseña maestra. Nunca sale de este dispositivo.</string>
+    <string name="label_vault_name">Nombre de la bóveda</string>
+    <string name="label_master_password">Contraseña maestra</string>
+    <string name="label_confirm_password">Confirmar contraseña</string>
+    <string name="password_strength">Fortaleza: %1$s</string>
+    <string name="create_vault">Crear bóveda</string>
+    <string name="welcome_back">Bienvenido de nuevo</string>
+    <string name="unlock_vault_subtitle">Desbloquear “%1$s”</string>
+    <string name="switch_vault">Cambiar de bóveda (%1$s)</string>
+    <string name="use_biometrics">Usar biometría</string>
+    <string name="error_password_too_short">Usa al menos 8 caracteres</string>
+    <string name="error_passwords_mismatch">Las contraseñas no coinciden</string>
+    <string name="error_setup_failed">Error en la configuración</string>
+    <string name="error_enter_master_password">Introduce tu contraseña maestra</string>
+    <string name="error_wrong_password">Contraseña incorrecta</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_get_started">Empezar</string>
+    <string name="onboarding_page_indicator">%1$d / %2$d</string>
+    <string name="onboarding_title_1">Sin conexión por diseño</string>
+    <string name="onboarding_body_1">Tu bóveda se cifra en este dispositivo con Argon2id y AES-GCM. Keyic nunca usa la red: los secretos se quedan en local.</string>
+    <string name="onboarding_title_2">Captura con la cámara</string>
+    <string name="onboarding_body_2">Escanea QR de TOTP, Wi‑Fi, tarjetas e identidad para rellenar entradas en segundos. Todo se procesa en el dispositivo.</string>
+    <string name="onboarding_title_3">Autocompletar y 2FA</string>
+    <string name="onboarding_body_3">Activa Keyic como servicio de Autocompletar para rellenar inicios de sesión. Si hay 2FA, el código queda listo tras rellenar; Auth muestra códigos con un toque.</string>
+    <string name="onboarding_title_4">Copia de seguridad sin cuenta</string>
+    <string name="onboarding_body_4">Elige una carpeta de Drive, OneDrive o local. Keyic escribe un archivo .keyic cifrado; tu nube sincroniza solo el texto cifrado. Etiquetas, salud y el generador mantienen la bóveda ordenada.</string>
+
+    <!-- Auth -->
+    <string name="search_accounts">Buscar cuentas…</string>
+    <string name="accounts_count">%1$d cuentas</string>
+    <string name="end_to_end_encrypted">Cifrado de extremo a extremo</string>
+    <string name="empty_auth_title">Sin códigos de autenticación</string>
+    <string name="empty_auth_subtitle">Añade un secreto TOTP en una entrada de inicio de sesión para ver aquí los códigos 2FA.</string>
+
+    <!-- Generator -->
+    <string name="generator_tab">Generador</string>
+    <string name="generator_strength_tab">Fortaleza</string>
+    <string name="generator_generated">Contraseña generada</string>
+    <string name="generator_strength">Fortaleza</string>
+    <string name="generator_options">Opciones</string>
+    <string name="generator_length">Longitud</string>
+    <string name="generator_length_value">%1$d caracteres</string>
+    <string name="generator_min_numbers">Mín. números</string>
+    <string name="generator_min_symbols">Mín. caracteres especiales</string>
+    <string name="generator_uppercase">Mayúsculas (A-Z)</string>
+    <string name="generator_lowercase">Minúsculas (a-z)</string>
+    <string name="generator_digits">Números (0-9)</string>
+    <string name="generator_symbols">Símbolos (!@#)</string>
+    <string name="generator_exclude_ambiguous">Excluir ambiguos</string>
+    <string name="generator_copy">Copiar</string>
+    <string name="generator_refresh">Regenerar</string>
+    <string name="generator_generate">Generar</string>
+    <string name="generator_check_title">Comprobar contraseña</string>
+    <string name="generator_check_label">Contraseña a analizar</string>
+    <string name="generator_score">Puntuación: %1$d / 100</string>
+    <string name="strength_label">Fortaleza: %1$s</string>
+    <string name="strength_empty">Vacía</string>
+    <string name="strength_weak">Débil</string>
+    <string name="strength_fair">Regular</string>
+    <string name="strength_strong">Fuerte</string>
+    <string name="strength_very_strong">Muy fuerte</string>
+
+    <!-- Health / Security tab -->
+    <string name="health_title">Salud de contraseñas</string>
+    <string name="health_subtitle">Solo análisis local — nada sale de este dispositivo.</string>
+    <string name="health_vault_score">Puntuación de la bóveda</string>
+    <string name="health_entries_issues">%1$d entradas · %2$d problemas</string>
+    <string name="health_reused">Reutilizadas</string>
+    <string name="health_weak">Débiles</string>
+    <string name="health_stale">Antiguas</string>
+    <string name="health_old">Antiguas</string>
+    <string name="health_open_entry">Revisar</string>
+    <string name="health_looking_good">Todo bien — no se encontraron problemas.</string>
+    <string name="health_issue_weak">Contraseña débil</string>
+    <string name="health_issue_reused">Contraseña reutilizada</string>
+    <string name="health_issue_stale">Contraseña desactualizada</string>
+
+    <!-- Settings sections -->
+    <string name="settings_security">Seguridad</string>
+    <string name="settings_autofill">Autocompletar</string>
+    <string name="settings_appearance">Apariencia</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_backup">Copia de seguridad y sincronización</string>
+    <string name="settings_help">Ayuda</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="language_system">Sistema</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese_simplified">简体中文</string>
+    <string name="language_chinese_traditional">繁體中文</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_korean">한국어</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Français</string>
+
+    <string name="settings_biometric">Desbloqueo biométrico</string>
+    <string name="settings_biometric_sub">Envuelve la clave de la bóveda con StrongBox / TEE</string>
+    <string name="settings_lock_background">Bloquear al salir de la app</string>
+    <string name="settings_lock_background_sub">Requiere contraseña maestra o biometría para volver</string>
+    <string name="settings_auto_lock">Bloqueo automático tras %1$ds de inactividad</string>
+    <string name="settings_clipboard_clear">Vaciar portapapeles tras %1$ds</string>
+    <string name="settings_screenshots">Permitir capturas de pantalla</string>
+    <string name="settings_screenshots_on">Capturas habilitadas</string>
+    <string name="settings_screenshots_off">FLAG_SECURE — capturas bloqueadas</string>
+    <string name="settings_dynamic_color">Color dinámico</string>
+    <string name="settings_dynamic_color_sub">Paleta Material You del fondo de pantalla</string>
+    <string name="settings_amoled">Negro AMOLED</string>
+    <string name="settings_amoled_sub">Fondos negro puro en tema oscuro</string>
+    <string name="settings_brand_credit">Logos de marca: Streamline Logos solid (CC BY 4.0) — streamlinehq.com</string>
+
+    <string name="settings_autofill_open">Abrir ajustes de Autocompletar</string>
+    <string name="settings_autofill_blurb">Activa Keyic como servicio de Autocompletar del sistema. Tras rellenar los campos de inicio de sesión, cualquier código 2FA vinculado se copia al portapapeles.</string>
+    <string name="settings_autofill_unsupported">Autocompletar no compatible con este dispositivo</string>
+    <string name="settings_change_master">Cambiar contraseña maestra</string>
+    <string name="settings_change_master_body">Los datos de la bóveda no cambian. Solo se rota la clave de envoltura.</string>
+    <string name="settings_current_password">Contraseña actual</string>
+    <string name="settings_new_password">Nueva contraseña</string>
+    <string name="settings_confirm_new_password">Confirmar nueva contraseña</string>
+    <string name="settings_update_password">Actualizar</string>
+    <string name="error_new_password_short">La nueva contraseña debe tener al menos 8 caracteres</string>
+    <string name="error_current_password">Contraseña actual incorrecta</string>
+    <string name="settings_import_export">Importar / Exportar</string>
+    <string name="settings_import_export_blurb">CSV para migrar a otra app; KeePass para intercambio .kdbx. Todo sin conexión.</string>
+    <string name="settings_import_csv">Importar CSV</string>
+    <string name="settings_export_csv">Exportar como CSV</string>
+    <string name="settings_import_kdbx">Importar KeePass (.kdbx)</string>
+    <string name="settings_export_kdbx">Exportar KeePass (.kdbx)</string>
+    <string name="settings_export_backup">Exportar copia cifrada</string>
+    <string name="settings_restore_backup">Restaurar copia cifrada</string>
+    <string name="settings_test_backup">Probar copia ahora</string>
+    <string name="settings_unlink_folder">Desvincular carpeta de sincronización</string>
+    <string name="settings_recycle_bin">Papelera</string>
+    <string name="settings_recycle_bin_blurb">Las entradas eliminadas suavemente permanecen solo en este dispositivo y no se incluyen en las copias.</string>
+    <string name="settings_recycle_purge">Eliminar automáticamente tras %1$d días (0 = nunca)</string>
+    <string name="settings_recycle_empty">La papelera está vacía</string>
+    <string name="toast_csv_empty">No se encontraron entradas en el CSV</string>
+    <string name="toast_csv_imported">Importadas %1$d entradas</string>
+    <string name="toast_csv_exported">Exportadas %1$d entradas</string>
+    <string name="toast_backup_exported">Copia exportada</string>
+    <string name="toast_kdbx_exported">Archivo KeePass exportado</string>
+    <string name="settings_backup_blurb">Copia JSON cifrada. Solo entradas activas (la papelera permanece en este dispositivo). Elige una carpeta de Drive/OneDrive/local con SAF — Keyic nunca usa la red.</string>
+    <string name="settings_last_backup">Última copia: %1$s</string>
+    <string name="backup_never_linked">Nunca vinculada</string>
+    <string name="backup_folder_missing">Carpeta ausente</string>
+    <string name="backup_never">Nunca</string>
+    <string name="backup_ok_ago">OK · %1$s</string>
+    <string name="backup_failed_detail">Error · %1$s</string>
+    <string name="backup_folder_linked_on">Carpeta vinculada · copia automática activada</string>
+    <string name="backup_folder_linked_off">Carpeta vinculada · copia automática desactivada</string>
+    <string name="backup_no_folder">Sin carpeta de sincronización vinculada</string>
+    <string name="backup_choose_folder">Elegir carpeta de sincronización (SAF)</string>
+    <string name="backup_auto">Copia automática al cambiar</string>
+    <string name="backup_auto_sub">Escribe keyic-autosync.keyic en la carpeta</string>
+    <string name="backup_frequency">Frecuencia de copia</string>
+    <string name="backup_freq_6h">Cada 6 horas</string>
+    <string name="backup_freq_12h">Cada 12 horas</string>
+    <string name="backup_freq_daily">Diaria</string>
+    <string name="backup_freq_3d">Cada 3 días</string>
+    <string name="backup_freq_weekly">Semanal</string>
+    <string name="relative_just_now">ahora mismo</string>
+    <string name="relative_minutes">hace %1$d min</string>
+    <string name="relative_hours">hace %1$d h</string>
+    <string name="relative_days">hace %1$d d</string>
+
+    <string name="settings_replay_onboarding">Volver a ver la introducción</string>
+    <string name="settings_lock_vault_now">Bloquear bóveda ahora</string>
+    <string name="biometrics_unavailable">Biometría no disponible</string>
+    <string name="unlock_vault_first">Desbloquea la bóveda primero</string>
+    <string name="biometric_enabled">Desbloqueo biométrico activado</string>
+    <string name="biometric_enable_title">Activar desbloqueo biométrico</string>
+    <string name="biometric_enable_subtitle">Confirma para envolver la clave de tu bóveda</string>
+    <string name="biometric_unlock_title">Desbloquear Keyic</string>
+    <string name="biometric_unlock_subtitle">Confirma con biometría</string>
+    <string name="biometric_use_password">Usar contraseña</string>
+    <string name="biometric_not_enabled">El desbloqueo biométrico no está activado</string>
+    <string name="passphrase_min_6">La frase de contraseña debe tener al menos 6 caracteres</string>
+    <string name="sync_folder_linked">Carpeta de sincronización vinculada</string>
+    <string name="sync_passphrase_title">Frase de sincronización</string>
+    <string name="sync_passphrase_body">Protege keyic-autosync.keyic en la carpeta elegida (puede diferir de la contraseña maestra).</string>
+    <string name="label_passphrase">Frase de contraseña</string>
+    <string name="set_sync_passphrase_first">Configura primero una frase de sincronización</string>
+
+    <!-- Entry -->
+    <string name="entry_add">Añadir elemento</string>
+    <string name="entry_edit">Editar elemento</string>
+    <string name="entry_not_found">Entrada no encontrada</string>
+    <string name="label_type">Tipo</string>
+    <string name="label_icon">Icono</string>
+    <string name="icon_auto">Automático</string>
+    <string name="icon_auto_hint">Detectado del título / URL — toca para cambiar</string>
+    <string name="icon_custom_hint">Icono personalizado — toca para cambiar</string>
+    <string name="label_title">Título</string>
+    <string name="label_nickname">Apodo</string>
+    <string name="label_username_email">Usuario / Correo</string>
+    <string name="label_password">Contraseña</string>
+    <string name="label_url">URL</string>
+    <string name="label_package_hints">Pistas de paquete de app</string>
+    <string name="label_package_hints_support">Separadas por comas — para Autocompletar</string>
+    <string name="label_totp">Secreto TOTP (Base32)</string>
+    <string name="label_secure_note">Nota segura</string>
+    <string name="label_cardholder">Titular</string>
+    <string name="label_card_number">Número de tarjeta</string>
+    <string name="label_expiry">Caducidad (MM/AA)</string>
+    <string name="label_cvv">CVV</string>
+    <string name="label_full_name">Nombre completo</string>
+    <string name="label_id_number">Número de documento</string>
+    <string name="label_details">Detalles</string>
+    <string name="label_tags">Etiquetas</string>
+    <string name="label_tags_support">Separadas por comas</string>
+    <string name="label_notes">Notas</string>
+    <string name="label_favorite">Favorito</string>
+    <string name="label_custom_fields">Campos personalizados</string>
+    <string name="label_field_name">Nombre del campo</string>
+    <string name="label_value">Valor</string>
+    <string name="label_masked">Enmascarado</string>
+    <string name="add_field">Añadir campo</string>
+    <string name="save_entry">Guardar entrada</string>
+    <string name="generate_password">Generar contraseña</string>
+    <string name="cd_generate">Generar</string>
+    <string name="move_to_bin_title">¿Mover a la papelera?</string>
+    <string name="move_to_bin_body">La entrada se mueve a la papelera en Ajustes. Podrás restaurarla después.</string>
+    <string name="move_to_bin">Mover a la papelera</string>
+    <string name="tags_prefix">Etiquetas: %1$s</string>
+    <string name="add_file">Añadir archivo</string>
+    <string name="attachment_added">Adjunto añadido</string>
+    <string name="attachment_exported">Exportado</string>
+    <string name="cd_delete_attachment">Eliminar adjunto</string>
+
+    <!-- Vault switcher -->
+    <string name="your_vaults">Tus bóvedas</string>
+    <string name="vaults_blurb">Separa trabajo y personal con bóvedas cifradas independientes.</string>
+    <string name="vault_active">Activa</string>
+    <string name="vault_tap_switch">Toca para cambiar</string>
+    <string name="add_separate_vault">Añadir una bóveda aparte con su propia contraseña</string>
+    <string name="new_vault">Nueva bóveda</string>
+    <string name="new_vault_blurb">Cada bóveda tiene su propia contraseña maestra y base de datos cifrada.</string>
+    <string name="rename_vault">Renombrar bóveda</string>
+    <string name="label_name">Nombre</string>
+    <string name="delete_vault_title">¿Eliminar %1$s?</string>
+    <string name="delete_vault_body">Todas las entradas de esta bóveda se eliminarán permanentemente. No se puede deshacer.</string>
+    <string name="error_enter_name">Introduce un nombre</string>
+
+    <!-- Errors / snackbars -->
+    <string name="error_vault_locked">La bóveda está bloqueada — desbloquéala e inténtalo de nuevo</string>
+    <string name="error_biometric_failed">Error en el desbloqueo biométrico</string>
+    <string name="error_saf_permission">Falta permiso de carpeta — vuelve a vincular la carpeta de sincronización</string>
+    <string name="error_backup_failed">Error en la copia de seguridad</string>
+    <string name="error_backup_failed_detail">Error en la copia: %1$s</string>
+    <string name="error_import_failed">Error al importar</string>
+    <string name="error_generic">Algo salió mal</string>
+    <string name="moved_to_recycle_bin">Movido a la papelera</string>
+    <string name="error_cancelled">Cancelado</string>
+
+    <!-- Autofill -->
+    <string name="autofill_unlock">Desbloquear Keyic…</string>
+    <string name="autofill_totp_copied">Código 2FA copiado</string>
+    <string name="autofill_save_title">Guardar en Keyic</string>
+    <string name="autofill_save_subtitle">Guarda este inicio de sesión en tu bóveda sin conexión.</string>
+    <string name="autofill_save_confirm">Guardar entrada</string>
+    <string name="autofill_save_cancel">Ahora no</string>
+    <string name="autofill_saved">Guardado en la bóveda</string>
+    <string name="autofill_saved_title">Inicio de sesión guardado</string>
+</resources>

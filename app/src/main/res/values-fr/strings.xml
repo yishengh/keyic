@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Keyic</string>
+
+    <!-- Common -->
+    <string name="action_save">Enregistrer</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_delete">Supprimer</string>
+    <string name="action_edit">Modifier</string>
+    <string name="action_back">Retour</string>
+    <string name="action_next">Suivant</string>
+    <string name="action_skip">Passer</string>
+    <string name="action_continue">Continuer</string>
+    <string name="action_unlock">Déverrouiller</string>
+    <string name="action_copy">Copier</string>
+    <string name="action_add">Ajouter</string>
+    <string name="action_remove">Retirer</string>
+    <string name="action_restore">Restaurer</string>
+    <string name="action_undo">Annuler</string>
+    <string name="action_change">Modifier</string>
+    <string name="action_export">Exporter</string>
+    <string name="action_lock_now">Verrouiller maintenant</string>
+    <string name="cd_lock_now">Verrouiller maintenant</string>
+    <string name="cd_favorite">Favori</string>
+    <string name="cd_has_2fa">Avec 2FA</string>
+    <string name="vault_default_name">Coffre</string>
+    <string name="vault_default_numbered">Coffre 1</string>
+
+    <!-- Tabs -->
+    <string name="tab_vault">Coffre</string>
+    <string name="tab_auth">Auth</string>
+    <string name="tab_generator">Générateur</string>
+    <string name="tab_security">Sécurité</string>
+    <string name="tab_settings">Réglages</string>
+    <string name="fab_add_item">Ajouter un élément</string>
+
+    <!-- Filters -->
+    <string name="filter_all">Tout</string>
+    <string name="filter_favorites">Favoris</string>
+    <string name="filter_login">Identifiant</string>
+    <string name="filter_note">Note</string>
+    <string name="filter_card">Carte</string>
+    <string name="filter_identity">Identité</string>
+    <string name="filter_totp">TOTP</string>
+
+    <!-- Vault list -->
+    <string name="search_vault">Rechercher dans le coffre…</string>
+    <string name="empty_vault_title">Aucune entrée pour l’instant</string>
+    <string name="empty_vault_subtitle">Ajoutez un identifiant, une note ou une carte — ou importez depuis CSV / KeePass dans les Réglages.</string>
+    <string name="no_matches">Aucun résultat</string>
+    <string name="pad_select_entry">Sélectionnez une entrée pour voir les détails</string>
+    <string name="no_username">Aucun nom d’utilisateur</string>
+    <string name="secure_note">Note sécurisée</string>
+    <string name="type_login">Identifiant</string>
+    <string name="type_note">Note sécurisée</string>
+    <string name="type_card">Carte</string>
+    <string name="type_identity">Identité</string>
+
+    <!-- Lock / Setup -->
+    <string name="setup_title">Keyic</string>
+    <string name="setup_subtitle">Créez un mot de passe maître. Il ne quitte jamais cet appareil.</string>
+    <string name="label_vault_name">Nom du coffre</string>
+    <string name="label_master_password">Mot de passe maître</string>
+    <string name="label_confirm_password">Confirmer le mot de passe</string>
+    <string name="password_strength">Force : %1$s</string>
+    <string name="create_vault">Créer le coffre</string>
+    <string name="welcome_back">Bon retour</string>
+    <string name="unlock_vault_subtitle">Déverrouiller « %1$s »</string>
+    <string name="switch_vault">Changer de coffre (%1$s)</string>
+    <string name="use_biometrics">Utiliser la biométrie</string>
+    <string name="error_password_too_short">Utilisez au moins 8 caractères</string>
+    <string name="error_passwords_mismatch">Les mots de passe ne correspondent pas</string>
+    <string name="error_setup_failed">Échec de la configuration</string>
+    <string name="error_enter_master_password">Saisissez votre mot de passe maître</string>
+    <string name="error_wrong_password">Mot de passe incorrect</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_get_started">Commencer</string>
+    <string name="onboarding_page_indicator">%1$d / %2$d</string>
+    <string name="onboarding_title_1">Hors ligne par conception</string>
+    <string name="onboarding_body_1">Votre coffre est chiffré sur cet appareil avec Argon2id et AES-GCM. Keyic n’utilise jamais le réseau — les secrets restent locaux.</string>
+    <string name="onboarding_title_2">Capture par caméra</string>
+    <string name="onboarding_body_2">Scannez des QR TOTP, Wi‑Fi, cartes bancaires et pièces d’identité pour remplir des entrées en quelques secondes. Tout est traité sur l’appareil.</string>
+    <string name="onboarding_title_3">Remplissage auto &amp; 2FA</string>
+    <string name="onboarding_body_3">Activez Keyic comme service de remplissage automatique. Avec la 2FA, le code est prêt après le remplissage ; l’onglet Auth affiche les codes en un tap.</string>
+    <string name="onboarding_title_4">Sauvegarde sans compte</string>
+    <string name="onboarding_body_4">Choisissez un dossier Drive, OneDrive ou local. Keyic écrit un fichier .keyic chiffré ; votre cloud synchronise uniquement le chiffrement. Tags, santé et générateur gardent le coffre en ordre.</string>
+
+    <!-- Auth -->
+    <string name="search_accounts">Rechercher des comptes…</string>
+    <string name="accounts_count">%1$d comptes</string>
+    <string name="end_to_end_encrypted">Chiffrement de bout en bout</string>
+    <string name="empty_auth_title">Aucun code d’authentification</string>
+    <string name="empty_auth_subtitle">Ajoutez un secret TOTP sur une entrée d’identifiant pour voir les codes 2FA ici.</string>
+
+    <!-- Generator -->
+    <string name="generator_tab">Générateur</string>
+    <string name="generator_strength_tab">Force</string>
+    <string name="generator_generated">Mot de passe généré</string>
+    <string name="generator_strength">Force</string>
+    <string name="generator_options">Options</string>
+    <string name="generator_length">Longueur</string>
+    <string name="generator_length_value">%1$d caractères</string>
+    <string name="generator_min_numbers">Min. chiffres</string>
+    <string name="generator_min_symbols">Min. caractères spéciaux</string>
+    <string name="generator_uppercase">Majuscules (A-Z)</string>
+    <string name="generator_lowercase">Minuscules (a-z)</string>
+    <string name="generator_digits">Chiffres (0-9)</string>
+    <string name="generator_symbols">Symboles (!@#)</string>
+    <string name="generator_exclude_ambiguous">Exclure les ambiguës</string>
+    <string name="generator_copy">Copier</string>
+    <string name="generator_refresh">Régénérer</string>
+    <string name="generator_generate">Générer</string>
+    <string name="generator_check_title">Vérifier un mot de passe</string>
+    <string name="generator_check_label">Mot de passe à analyser</string>
+    <string name="generator_score">Score : %1$d / 100</string>
+    <string name="strength_label">Force : %1$s</string>
+    <string name="strength_empty">Vide</string>
+    <string name="strength_weak">Faible</string>
+    <string name="strength_fair">Moyen</string>
+    <string name="strength_strong">Fort</string>
+    <string name="strength_very_strong">Très fort</string>
+
+    <!-- Health / Security tab -->
+    <string name="health_title">Santé des mots de passe</string>
+    <string name="health_subtitle">Analyse locale uniquement — rien ne quitte cet appareil.</string>
+    <string name="health_vault_score">Score du coffre</string>
+    <string name="health_entries_issues">%1$d entrées · %2$d problèmes</string>
+    <string name="health_reused">Réutilisés</string>
+    <string name="health_weak">Faibles</string>
+    <string name="health_stale">Anciens</string>
+    <string name="health_old">Anciens</string>
+    <string name="health_open_entry">Examiner</string>
+    <string name="health_looking_good">Tout va bien — aucun problème détecté.</string>
+    <string name="health_issue_weak">Mot de passe faible</string>
+    <string name="health_issue_reused">Mot de passe réutilisé</string>
+    <string name="health_issue_stale">Mot de passe obsolète</string>
+
+    <!-- Settings sections -->
+    <string name="settings_security">Sécurité</string>
+    <string name="settings_autofill">Remplissage auto</string>
+    <string name="settings_appearance">Apparence</string>
+    <string name="settings_theme">Thème</string>
+    <string name="settings_language">Langue</string>
+    <string name="settings_backup">Sauvegarde et synchronisation</string>
+    <string name="settings_help">Aide</string>
+    <string name="theme_system">Système</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_dark">Sombre</string>
+    <string name="language_system">Système</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese_simplified">简体中文</string>
+    <string name="language_chinese_traditional">繁體中文</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_korean">한국어</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Français</string>
+
+    <string name="settings_biometric">Déverrouillage biométrique</string>
+    <string name="settings_biometric_sub">Protège la clé du coffre avec StrongBox / TEE</string>
+    <string name="settings_lock_background">Verrouiller en quittant l’appli</string>
+    <string name="settings_lock_background_sub">Mot de passe maître ou biométrie requis pour revenir</string>
+    <string name="settings_auto_lock">Verrouillage auto après %1$ds d’inactivité</string>
+    <string name="settings_clipboard_clear">Effacer le presse-papiers après %1$ds</string>
+    <string name="settings_screenshots">Autoriser les captures d’écran</string>
+    <string name="settings_screenshots_on">Captures d’écran activées</string>
+    <string name="settings_screenshots_off">FLAG_SECURE — captures bloquées</string>
+    <string name="settings_dynamic_color">Couleur dynamique</string>
+    <string name="settings_dynamic_color_sub">Palette Material You depuis le fond d’écran</string>
+    <string name="settings_amoled">Noir AMOLED</string>
+    <string name="settings_amoled_sub">Fonds noir pur en thème sombre</string>
+    <string name="settings_brand_credit">Logos de marque : Streamline Logos solid (CC BY 4.0) — streamlinehq.com</string>
+
+    <string name="settings_autofill_open">Ouvrir les réglages de remplissage auto</string>
+    <string name="settings_autofill_blurb">Activez Keyic comme service de remplissage automatique. Après avoir rempli les champs de connexion, tout code 2FA associé est copié dans le presse-papiers.</string>
+    <string name="settings_autofill_unsupported">Remplissage automatique non pris en charge sur cet appareil</string>
+    <string name="settings_change_master">Changer le mot de passe maître</string>
+    <string name="settings_change_master_body">Les données du coffre restent identiques. Seule la clé d\'enveloppement est renouvelée.</string>
+    <string name="settings_current_password">Mot de passe actuel</string>
+    <string name="settings_new_password">Nouveau mot de passe</string>
+    <string name="settings_confirm_new_password">Confirmer le nouveau mot de passe</string>
+    <string name="settings_update_password">Mettre à jour</string>
+    <string name="error_new_password_short">Le nouveau mot de passe doit contenir au moins 8 caractères</string>
+    <string name="error_current_password">Mot de passe actuel incorrect</string>
+    <string name="settings_import_export">Importer / Exporter</string>
+    <string name="settings_import_export_blurb">CSV pour migrer vers une autre appli ; KeePass pour l\'échange .kdbx. Tout hors ligne.</string>
+    <string name="settings_import_csv">Importer CSV</string>
+    <string name="settings_export_csv">Exporter en CSV</string>
+    <string name="settings_import_kdbx">Importer KeePass (.kdbx)</string>
+    <string name="settings_export_kdbx">Exporter KeePass (.kdbx)</string>
+    <string name="settings_export_backup">Exporter une sauvegarde chiffrée</string>
+    <string name="settings_restore_backup">Restaurer une sauvegarde chiffrée</string>
+    <string name="settings_test_backup">Tester la sauvegarde maintenant</string>
+    <string name="settings_unlink_folder">Délier le dossier de sync</string>
+    <string name="settings_recycle_bin">Corbeille</string>
+    <string name="settings_recycle_bin_blurb">Les entrées supprimées restent uniquement sur cet appareil et ne sont pas incluses dans les sauvegardes.</string>
+    <string name="settings_recycle_purge">Suppression auto après %1$d jours (0 = jamais)</string>
+    <string name="settings_recycle_empty">La corbeille est vide</string>
+    <string name="toast_csv_empty">Aucune entrée trouvée dans le CSV</string>
+    <string name="toast_csv_imported">%1$d entrées importées</string>
+    <string name="toast_csv_exported">%1$d entrées exportées</string>
+    <string name="toast_backup_exported">Sauvegarde exportée</string>
+    <string name="toast_kdbx_exported">Fichier KeePass exporté</string>
+    <string name="settings_backup_blurb">Sauvegarde JSON chiffrée. Entrées actives uniquement (la corbeille reste sur cet appareil). Choisissez un dossier Drive/OneDrive/local via SAF — Keyic n’utilise jamais le réseau.</string>
+    <string name="settings_last_backup">Dernière sauvegarde : %1$s</string>
+    <string name="backup_never_linked">Jamais lié</string>
+    <string name="backup_folder_missing">Dossier manquant</string>
+    <string name="backup_never">Jamais</string>
+    <string name="backup_ok_ago">OK · %1$s</string>
+    <string name="backup_failed_detail">Échec · %1$s</string>
+    <string name="backup_folder_linked_on">Dossier lié · sauvegarde auto activée</string>
+    <string name="backup_folder_linked_off">Dossier lié · sauvegarde auto désactivée</string>
+    <string name="backup_no_folder">Aucun dossier de sync lié</string>
+    <string name="backup_choose_folder">Choisir le dossier de sync (SAF)</string>
+    <string name="backup_auto">Sauvegarde auto aux modifications</string>
+    <string name="backup_auto_sub">Écrit keyic-autosync.keyic dans le dossier</string>
+    <string name="backup_frequency">Fréquence de sauvegarde</string>
+    <string name="backup_freq_6h">Toutes les 6 heures</string>
+    <string name="backup_freq_12h">Toutes les 12 heures</string>
+    <string name="backup_freq_daily">Quotidienne</string>
+    <string name="backup_freq_3d">Tous les 3 jours</string>
+    <string name="backup_freq_weekly">Hebdomadaire</string>
+    <string name="relative_just_now">à l’instant</string>
+    <string name="relative_minutes">il y a %1$d min</string>
+    <string name="relative_hours">il y a %1$d h</string>
+    <string name="relative_days">il y a %1$d j</string>
+
+    <string name="settings_replay_onboarding">Revoir l’introduction</string>
+    <string name="settings_lock_vault_now">Verrouiller le coffre maintenant</string>
+    <string name="biometrics_unavailable">Biométrie indisponible</string>
+    <string name="unlock_vault_first">Déverrouillez d’abord le coffre</string>
+    <string name="biometric_enabled">Déverrouillage biométrique activé</string>
+    <string name="biometric_enable_title">Activer le déverrouillage biométrique</string>
+    <string name="biometric_enable_subtitle">Confirmez pour protéger la clé de votre coffre</string>
+    <string name="biometric_unlock_title">Déverrouiller Keyic</string>
+    <string name="biometric_unlock_subtitle">Confirmez avec la biométrie</string>
+    <string name="biometric_use_password">Utiliser le mot de passe</string>
+    <string name="biometric_not_enabled">Le déverrouillage biométrique n’est pas activé</string>
+    <string name="passphrase_min_6">La phrase secrète doit contenir au moins 6 caractères</string>
+    <string name="sync_folder_linked">Dossier de synchronisation lié</string>
+    <string name="sync_passphrase_title">Phrase secrète de sync</string>
+    <string name="sync_passphrase_body">Protège keyic-autosync.keyic dans le dossier choisi (peut différer du mot de passe maître).</string>
+    <string name="label_passphrase">Phrase secrète</string>
+    <string name="set_sync_passphrase_first">Définissez d’abord une phrase secrète de sync</string>
+
+    <!-- Entry -->
+    <string name="entry_add">Ajouter un élément</string>
+    <string name="entry_edit">Modifier l’élément</string>
+    <string name="entry_not_found">Entrée introuvable</string>
+    <string name="label_type">Type</string>
+    <string name="label_icon">Icône</string>
+    <string name="icon_auto">Auto</string>
+    <string name="icon_auto_hint">Détectée depuis le titre / l’URL — appuyez pour changer</string>
+    <string name="icon_custom_hint">Icône personnalisée — appuyez pour changer</string>
+    <string name="label_title">Titre</string>
+    <string name="label_nickname">Surnom</string>
+    <string name="label_username_email">Nom d’utilisateur / E-mail</string>
+    <string name="label_password">Mot de passe</string>
+    <string name="label_url">URL</string>
+    <string name="label_package_hints">Indices de package d’appli</string>
+    <string name="label_package_hints_support">Séparés par des virgules — pour le remplissage auto</string>
+    <string name="label_totp">Secret TOTP (Base32)</string>
+    <string name="label_secure_note">Note sécurisée</string>
+    <string name="label_cardholder">Titulaire</string>
+    <string name="label_card_number">Numéro de carte</string>
+    <string name="label_expiry">Expiration (MM/AA)</string>
+    <string name="label_cvv">CVV</string>
+    <string name="label_full_name">Nom complet</string>
+    <string name="label_id_number">Numéro d’identité</string>
+    <string name="label_details">Détails</string>
+    <string name="label_tags">Tags</string>
+    <string name="label_tags_support">Séparés par des virgules</string>
+    <string name="label_notes">Notes</string>
+    <string name="label_favorite">Favori</string>
+    <string name="label_custom_fields">Champs personnalisés</string>
+    <string name="label_field_name">Nom du champ</string>
+    <string name="label_value">Valeur</string>
+    <string name="label_masked">Masqué</string>
+    <string name="add_field">Ajouter un champ</string>
+    <string name="save_entry">Enregistrer l’entrée</string>
+    <string name="generate_password">Générer un mot de passe</string>
+    <string name="cd_generate">Générer</string>
+    <string name="move_to_bin_title">Déplacer vers la corbeille ?</string>
+    <string name="move_to_bin_body">L’entrée va dans la corbeille des Réglages. Vous pourrez la restaurer plus tard.</string>
+    <string name="move_to_bin">Mettre à la corbeille</string>
+    <string name="tags_prefix">Tags : %1$s</string>
+    <string name="add_file">Ajouter un fichier</string>
+    <string name="attachment_added">Pièce jointe ajoutée</string>
+    <string name="attachment_exported">Exporté</string>
+    <string name="cd_delete_attachment">Supprimer la pièce jointe</string>
+
+    <!-- Vault switcher -->
+    <string name="your_vaults">Vos coffres</string>
+    <string name="vaults_blurb">Séparez travail et personnel avec des coffres chiffrés indépendants.</string>
+    <string name="vault_active">Actif</string>
+    <string name="vault_tap_switch">Appuyez pour changer</string>
+    <string name="add_separate_vault">Ajouter un coffre séparé avec son propre mot de passe</string>
+    <string name="new_vault">Nouveau coffre</string>
+    <string name="new_vault_blurb">Chaque coffre a son propre mot de passe maître et sa base chiffrée.</string>
+    <string name="rename_vault">Renommer le coffre</string>
+    <string name="label_name">Nom</string>
+    <string name="delete_vault_title">Supprimer %1$s ?</string>
+    <string name="delete_vault_body">Toutes les entrées de ce coffre seront définitivement supprimées. Irréversible.</string>
+    <string name="error_enter_name">Saisissez un nom</string>
+
+    <!-- Errors / snackbars -->
+    <string name="error_vault_locked">Le coffre est verrouillé — déverrouillez et réessayez</string>
+    <string name="error_biometric_failed">Échec du déverrouillage biométrique</string>
+    <string name="error_saf_permission">Permission de dossier manquante — liez à nouveau le dossier de sync</string>
+    <string name="error_backup_failed">Échec de la sauvegarde</string>
+    <string name="error_backup_failed_detail">Échec de la sauvegarde : %1$s</string>
+    <string name="error_import_failed">Échec de l’importation</string>
+    <string name="error_generic">Une erreur s’est produite</string>
+    <string name="moved_to_recycle_bin">Déplacé vers la corbeille</string>
+    <string name="error_cancelled">Annulé</string>
+
+    <!-- Autofill -->
+    <string name="autofill_unlock">Déverrouiller Keyic…</string>
+    <string name="autofill_totp_copied">Code 2FA copié</string>
+    <string name="autofill_save_title">Enregistrer dans Keyic</string>
+    <string name="autofill_save_subtitle">Stockez cet identifiant dans votre coffre hors ligne.</string>
+    <string name="autofill_save_confirm">Enregistrer l’entrée</string>
+    <string name="autofill_save_cancel">Pas maintenant</string>
+    <string name="autofill_saved">Enregistré dans le coffre</string>
+    <string name="autofill_saved_title">Identifiant enregistré</string>
+</resources>

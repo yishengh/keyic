@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- E · Shield + shackle + K monogram -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.78"
+        android:scaleY="0.78">
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M41,42V35c0,-7.18 5.82,-13 13,-13s13,5.82 13,13v7"
+            android:strokeWidth="6.5"
+            android:strokeColor="#F4F5F0"
+            android:strokeLineCap="round" />
+        <path
+            android:fillColor="#F4F5F0"
+            android:pathData="M54,40c15,5.5 26,7.5 26,7.5v19c0,15 -11,25 -26,31C39,91.5 28,81.5 28,66.5V47.5S39,45.5 54,40z" />
+        <!-- K cutout (brand teal shows through) -->
+        <path
+            android:fillColor="#1A6B5C"
+            android:pathData="M46,52h5.2v8.6L58.6,52H65L55.2,62.2 66,74H59.4L51.2,64.6V74H46V52z" />
+    </group>
+</vector>

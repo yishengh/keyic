@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Keyic</string>
+
+    <!-- Common -->
+    <string name="action_save">儲存</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_delete">刪除</string>
+    <string name="action_edit">編輯</string>
+    <string name="action_back">返回</string>
+    <string name="action_next">下一步</string>
+    <string name="action_skip">略過</string>
+    <string name="action_continue">繼續</string>
+    <string name="action_unlock">解鎖</string>
+    <string name="action_copy">複製</string>
+    <string name="action_add">新增</string>
+    <string name="action_remove">移除</string>
+    <string name="action_restore">還原</string>
+    <string name="action_undo">復原</string>
+    <string name="action_change">變更</string>
+    <string name="action_export">匯出</string>
+    <string name="action_lock_now">立即鎖定</string>
+    <string name="cd_lock_now">立即鎖定</string>
+    <string name="cd_favorite">我的最愛</string>
+    <string name="cd_has_2fa">已啟用雙重驗證</string>
+    <string name="vault_default_name">保險庫</string>
+    <string name="vault_default_numbered">保險庫 1</string>
+
+    <!-- Tabs -->
+    <string name="tab_vault">保險庫</string>
+    <string name="tab_auth">驗證器</string>
+    <string name="tab_generator">產生器</string>
+    <string name="tab_security">安全性</string>
+    <string name="tab_settings">設定</string>
+    <string name="fab_add_item">新增項目</string>
+
+    <!-- Filters -->
+    <string name="filter_all">全部</string>
+    <string name="filter_favorites">我的最愛</string>
+    <string name="filter_login">登入</string>
+    <string name="filter_note">備註</string>
+    <string name="filter_card">卡片</string>
+    <string name="filter_identity">身分</string>
+    <string name="filter_totp">驗證碼</string>
+
+    <!-- Vault list -->
+    <string name="search_vault">搜尋保險庫…</string>
+    <string name="empty_vault_title">尚無項目</string>
+    <string name="empty_vault_subtitle">新增登入、備註或卡片，也可在設定中從 CSV / KeePass 匯入。</string>
+    <string name="no_matches">沒有符合的結果</string>
+    <string name="pad_select_entry">選擇一筆記錄以查看詳情</string>
+    <string name="no_username">無使用者名稱</string>
+    <string name="secure_note">安全備註</string>
+    <string name="type_login">登入</string>
+    <string name="type_note">安全備註</string>
+    <string name="type_card">卡片</string>
+    <string name="type_identity">身分</string>
+
+    <!-- Lock / Setup -->
+    <string name="setup_title">Keyic</string>
+    <string name="setup_subtitle">建立主密碼。它絕不會離開此裝置。</string>
+    <string name="label_vault_name">保險庫名稱</string>
+    <string name="label_master_password">主密碼</string>
+    <string name="label_confirm_password">確認密碼</string>
+    <string name="password_strength">強度：%1$s</string>
+    <string name="create_vault">建立保險庫</string>
+    <string name="welcome_back">歡迎回來</string>
+    <string name="unlock_vault_subtitle">解鎖「%1$s」</string>
+    <string name="switch_vault">切換保險庫（%1$s）</string>
+    <string name="use_biometrics">使用生物辨識</string>
+    <string name="error_password_too_short">至少使用 8 個字元</string>
+    <string name="error_passwords_mismatch">兩次密碼不一致</string>
+    <string name="error_setup_failed">建立失敗</string>
+    <string name="error_enter_master_password">請輸入主密碼</string>
+    <string name="error_wrong_password">密碼錯誤</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_get_started">開始使用</string>
+    <string name="onboarding_page_indicator">%1$d / %2$d</string>
+    <string name="onboarding_title_1">天生離線</string>
+    <string name="onboarding_body_1">保險庫在本機以 Argon2id 與 AES-GCM 加密。Keyic 不使用網路，機密只留在本機。</string>
+    <string name="onboarding_title_2">相機快速錄入</string>
+    <string name="onboarding_body_2">掃描 TOTP 二維碼、Wi‑Fi 二維碼、銀行卡與證件，幾秒即可填入項目。全部在裝置本地處理。</string>
+    <string name="onboarding_title_3">自動填入與雙重驗證</string>
+    <string name="onboarding_body_3">將 Keyic 設為系統自動填入服務以填寫登入資訊。含雙重驗證時，填入後驗證碼即可用；「驗證」頁可一鍵查看動態碼。</string>
+    <string name="onboarding_title_4">無帳號也能備份</string>
+    <string name="onboarding_body_4">選擇 Drive、OneDrive 或本機資料夾。Keyic 寫入加密的 .keyic 檔案，由雲端應用程式同步密文。標籤、安全體檢與密碼產生器幫你打理保險庫。</string>
+
+    <!-- Auth -->
+    <string name="search_accounts">搜尋帳戶…</string>
+    <string name="accounts_count">%1$d 個帳戶</string>
+    <string name="end_to_end_encrypted">端對端加密</string>
+    <string name="empty_auth_title">尚無驗證碼</string>
+    <string name="empty_auth_subtitle">在登入項目中新增 TOTP 密鑰後，即可在此查看雙重驗證碼。</string>
+
+    <!-- Generator -->
+    <string name="generator_tab">產生器</string>
+    <string name="generator_strength_tab">強度</string>
+    <string name="generator_generated">已產生的密碼</string>
+    <string name="generator_strength">強度</string>
+    <string name="generator_options">選項</string>
+    <string name="generator_length">長度</string>
+    <string name="generator_length_value">%1$d 個字元</string>
+    <string name="generator_min_numbers">最少數字</string>
+    <string name="generator_min_symbols">最少特殊字元</string>
+    <string name="generator_uppercase">大寫字母 (A-Z)</string>
+    <string name="generator_lowercase">小寫字母 (a-z)</string>
+    <string name="generator_digits">數字 (0-9)</string>
+    <string name="generator_symbols">符號 (!@#)</string>
+    <string name="generator_exclude_ambiguous">排除易混淆字元</string>
+    <string name="generator_copy">複製</string>
+    <string name="generator_refresh">重新產生</string>
+    <string name="generator_generate">產生</string>
+    <string name="generator_check_title">檢查密碼</string>
+    <string name="generator_check_label">要分析的密碼</string>
+    <string name="generator_score">得分：%1$d / 100</string>
+    <string name="strength_label">強度：%1$s</string>
+    <string name="strength_empty">空</string>
+    <string name="strength_weak">弱</string>
+    <string name="strength_fair">普通</string>
+    <string name="strength_strong">強</string>
+    <string name="strength_very_strong">非常強</string>
+
+    <!-- Health / Security tab -->
+    <string name="health_title">密碼健康度</string>
+    <string name="health_subtitle">僅在本機分析 — 不會離開此裝置。</string>
+    <string name="health_vault_score">保險庫得分</string>
+    <string name="health_entries_issues">%1$d 個項目 · %2$d 個問題</string>
+    <string name="health_reused">重複使用</string>
+    <string name="health_weak">弱密碼</string>
+    <string name="health_stale">過舊</string>
+    <string name="health_old">過舊</string>
+    <string name="health_open_entry">檢視</string>
+    <string name="health_looking_good">一切正常 — 未發現問題。</string>
+    <string name="health_issue_weak">弱密碼</string>
+    <string name="health_issue_reused">重複使用的密碼</string>
+    <string name="health_issue_stale">過舊的密碼</string>
+
+    <!-- Settings sections -->
+    <string name="settings_security">安全性</string>
+    <string name="settings_autofill">自動填入</string>
+    <string name="settings_appearance">外觀</string>
+    <string name="settings_theme">主題</string>
+    <string name="settings_language">語言</string>
+    <string name="settings_backup">備份與同步</string>
+    <string name="settings_help">說明</string>
+    <string name="theme_system">跟隨系統</string>
+    <string name="theme_light">淺色</string>
+    <string name="theme_dark">深色</string>
+    <string name="language_system">跟隨系統</string>
+    <string name="language_english">English</string>
+    <string name="language_chinese_simplified">简体中文</string>
+    <string name="language_chinese_traditional">繁體中文</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_korean">한국어</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Français</string>
+
+    <string name="settings_biometric">生物辨識解鎖</string>
+    <string name="settings_biometric_sub">以 StrongBox / TEE 封裝保險庫金鑰</string>
+    <string name="settings_lock_background">離開應用程式時鎖定</string>
+    <string name="settings_lock_background_sub">返回時需要主密碼或生物辨識</string>
+    <string name="settings_auto_lock">閒置 %1$d 秒後自動鎖定</string>
+    <string name="settings_clipboard_clear">%1$d 秒後清除剪貼簿</string>
+    <string name="settings_screenshots">允許螢幕截圖</string>
+    <string name="settings_screenshots_on">已允許螢幕截圖</string>
+    <string name="settings_screenshots_off">FLAG_SECURE — 已禁止螢幕截圖</string>
+    <string name="settings_dynamic_color">動態色彩</string>
+    <string name="settings_dynamic_color_sub">依桌布套用 Material You 配色</string>
+    <string name="settings_amoled">AMOLED 純黑</string>
+    <string name="settings_amoled_sub">深色主題使用純黑背景</string>
+    <string name="settings_brand_credit">品牌圖示：Streamline Logos solid（CC BY 4.0）— streamlinehq.com</string>
+
+    <string name="settings_autofill_open">開啟自動填入設定</string>
+    <string name="settings_autofill_blurb">將 Keyic 設為系統自動填入服務。填入登入欄位後，關聯的雙重驗證碼會複製到剪貼簿。</string>
+    <string name="settings_autofill_unsupported">此裝置不支援自動填入</string>
+    <string name="settings_change_master">變更主密碼</string>
+    <string name="settings_change_master_body">保險庫資料保持不變，僅輪換封裝金鑰。</string>
+    <string name="settings_current_password">目前密碼</string>
+    <string name="settings_new_password">新密碼</string>
+    <string name="settings_confirm_new_password">確認新密碼</string>
+    <string name="settings_update_password">更新</string>
+    <string name="error_new_password_short">新密碼至少需要 8 個字元</string>
+    <string name="error_current_password">目前密碼不正確</string>
+    <string name="settings_import_export">匯入 / 匯出</string>
+    <string name="settings_import_export_blurb">CSV 用於遷移到其他應用程式；KeePass 用於 .kdbx 互換。全部離線。</string>
+    <string name="settings_import_csv">匯入 CSV</string>
+    <string name="settings_export_csv">匯出為 CSV</string>
+    <string name="settings_import_kdbx">匯入 KeePass (.kdbx)</string>
+    <string name="settings_export_kdbx">匯出 KeePass (.kdbx)</string>
+    <string name="settings_export_backup">匯出加密備份</string>
+    <string name="settings_restore_backup">還原加密備份</string>
+    <string name="settings_test_backup">立即測試備份</string>
+    <string name="settings_unlink_folder">取消關聯同步資料夾</string>
+    <string name="settings_recycle_bin">資源回收筒</string>
+    <string name="settings_recycle_bin_blurb">軟刪除的項目僅保留在本裝置，不會包含在備份中。</string>
+    <string name="settings_recycle_purge">%1$d 天後自動清除（0 = 永不）</string>
+    <string name="settings_recycle_empty">資源回收筒是空的</string>
+    <string name="toast_csv_empty">CSV 中未找到項目</string>
+    <string name="toast_csv_imported">已匯入 %1$d 個項目</string>
+    <string name="toast_csv_exported">已匯出 %1$d 個項目</string>
+    <string name="toast_backup_exported">備份已匯出</string>
+    <string name="toast_kdbx_exported">KeePass 檔案已匯出</string>
+    <string name="settings_backup_blurb">加密 JSON 備份。僅含有效項目（回收筒仍留在本機）。透過 SAF 選擇 Drive/OneDrive/本機資料夾 — Keyic 從不連網。</string>
+    <string name="settings_last_backup">上次備份：%1$s</string>
+    <string name="backup_never_linked">從未連結</string>
+    <string name="backup_folder_missing">資料夾遺失</string>
+    <string name="backup_never">從未</string>
+    <string name="backup_ok_ago">正常 · %1$s</string>
+    <string name="backup_failed_detail">失敗 · %1$s</string>
+    <string name="backup_folder_linked_on">已連結資料夾 · 自動備份開啟</string>
+    <string name="backup_folder_linked_off">已連結資料夾 · 自動備份關閉</string>
+    <string name="backup_no_folder">未連結同步資料夾</string>
+    <string name="backup_choose_folder">選擇同步資料夾（SAF）</string>
+    <string name="backup_auto">變更時自動備份</string>
+    <string name="backup_auto_sub">將 keyic-autosync.keyic 寫入該資料夾</string>
+    <string name="backup_frequency">備份頻率</string>
+    <string name="backup_freq_6h">每 6 小時</string>
+    <string name="backup_freq_12h">每 12 小時</string>
+    <string name="backup_freq_daily">每天</string>
+    <string name="backup_freq_3d">每 3 天</string>
+    <string name="backup_freq_weekly">每週</string>
+    <string name="relative_just_now">剛剛</string>
+    <string name="relative_minutes">%1$d 分鐘前</string>
+    <string name="relative_hours">%1$d 小時前</string>
+    <string name="relative_days">%1$d 天前</string>
+
+    <string name="settings_replay_onboarding">重新查看導覽</string>
+    <string name="settings_lock_vault_now">立即鎖定保險庫</string>
+    <string name="biometrics_unavailable">生物辨識無法使用</string>
+    <string name="unlock_vault_first">請先解鎖保險庫</string>
+    <string name="biometric_enabled">已啟用生物辨識解鎖</string>
+    <string name="biometric_enable_title">啟用生物辨識解鎖</string>
+    <string name="biometric_enable_subtitle">確認後封裝您的保險庫金鑰</string>
+    <string name="biometric_unlock_title">解鎖 Keyic</string>
+    <string name="biometric_unlock_subtitle">使用生物辨識確認</string>
+    <string name="biometric_use_password">使用密碼</string>
+    <string name="biometric_not_enabled">尚未啟用生物辨識解鎖</string>
+    <string name="passphrase_min_6">密碼片語至少 6 個字元</string>
+    <string name="sync_folder_linked">已連結同步資料夾</string>
+    <string name="sync_passphrase_title">同步密碼片語</string>
+    <string name="sync_passphrase_body">用於保護所選資料夾中的 keyic-autosync.keyic（可與主密碼不同）。</string>
+    <string name="label_passphrase">密碼片語</string>
+    <string name="set_sync_passphrase_first">請先設定同步密碼片語</string>
+
+    <!-- Entry -->
+    <string name="entry_add">新增項目</string>
+    <string name="entry_edit">編輯項目</string>
+    <string name="entry_not_found">找不到項目</string>
+    <string name="label_type">類型</string>
+    <string name="label_icon">圖示</string>
+    <string name="icon_auto">自動</string>
+    <string name="icon_auto_hint">依標題 / URL 辨識 — 點按可變更</string>
+    <string name="icon_custom_hint">自訂圖示 — 點按可變更</string>
+    <string name="label_title">標題</string>
+    <string name="label_nickname">暱稱</string>
+    <string name="label_username_email">使用者名稱 / 電子郵件</string>
+    <string name="label_password">密碼</string>
+    <string name="label_url">網址</string>
+    <string name="label_package_hints">應用程式套件提示</string>
+    <string name="label_package_hints_support">以逗號分隔 — 用於自動填入</string>
+    <string name="label_totp">TOTP 密鑰（Base32）</string>
+    <string name="label_secure_note">安全備註</string>
+    <string name="label_cardholder">持卡人</string>
+    <string name="label_card_number">卡號</string>
+    <string name="label_expiry">有效期限（月/年）</string>
+    <string name="label_cvv">CVV</string>
+    <string name="label_full_name">全名</string>
+    <string name="label_id_number">證件號碼</string>
+    <string name="label_details">詳細資料</string>
+    <string name="label_tags">標籤</string>
+    <string name="label_tags_support">以逗號分隔</string>
+    <string name="label_notes">備註</string>
+    <string name="label_favorite">我的最愛</string>
+    <string name="label_custom_fields">自訂欄位</string>
+    <string name="label_field_name">欄位名稱</string>
+    <string name="label_value">值</string>
+    <string name="label_masked">遮罩顯示</string>
+    <string name="add_field">新增欄位</string>
+    <string name="save_entry">儲存項目</string>
+    <string name="generate_password">產生密碼</string>
+    <string name="cd_generate">產生</string>
+    <string name="move_to_bin_title">移至回收筒？</string>
+    <string name="move_to_bin_body">項目會移至設定中的回收筒，之後可以還原。</string>
+    <string name="move_to_bin">移至回收筒</string>
+    <string name="tags_prefix">標籤：%1$s</string>
+    <string name="add_file">新增檔案</string>
+    <string name="attachment_added">已新增附件</string>
+    <string name="attachment_exported">已匯出</string>
+    <string name="cd_delete_attachment">刪除附件</string>
+
+    <!-- Vault switcher -->
+    <string name="your_vaults">我的保險庫</string>
+    <string name="vaults_blurb">用獨立加密保險庫分開工作與個人資料。</string>
+    <string name="vault_active">使用中</string>
+    <string name="vault_tap_switch">點按切換</string>
+    <string name="add_separate_vault">新增使用獨立密碼的保險庫</string>
+    <string name="new_vault">新建保險庫</string>
+    <string name="new_vault_blurb">每個保險庫有獨立的主密碼與加密資料庫。</string>
+    <string name="rename_vault">重新命名保險庫</string>
+    <string name="label_name">名稱</string>
+    <string name="delete_vault_title">刪除 %1$s？</string>
+    <string name="delete_vault_body">此保險庫中的全部項目將被永久刪除，無法復原。</string>
+    <string name="error_enter_name">請輸入名稱</string>
+
+    <!-- Errors / snackbars -->
+    <string name="error_vault_locked">保險庫已鎖定 — 請解鎖後重試</string>
+    <string name="error_biometric_failed">生物辨識解鎖失敗</string>
+    <string name="error_saf_permission">缺少資料夾權限 — 請重新連結同步資料夾</string>
+    <string name="error_backup_failed">備份失敗</string>
+    <string name="error_backup_failed_detail">備份失敗：%1$s</string>
+    <string name="error_import_failed">匯入失敗</string>
+    <string name="error_generic">發生錯誤</string>
+    <string name="moved_to_recycle_bin">已移至回收筒</string>
+    <string name="error_cancelled">已取消</string>
+
+    <!-- Autofill -->
+    <string name="autofill_unlock">解鎖 Keyic…</string>
+    <string name="autofill_totp_copied">已複製雙重驗證碼</string>
+    <string name="autofill_save_title">儲存到 Keyic</string>
+    <string name="autofill_save_subtitle">將此登入儲存到離線保險庫。</string>
+    <string name="autofill_save_confirm">儲存項目</string>
+    <string name="autofill_save_cancel">現在不要</string>
+    <string name="autofill_saved">已儲存到保險庫</string>
+    <string name="autofill_saved_title">已儲存的登入</string>
+</resources>

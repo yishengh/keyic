@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Streamline Logos solid CC BY 4.0 https://streamlinehq.com -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="nonZero"
+        android:pathData="m1 7.557 1.117 1.36s1.37 -1.642 2.23 -0.911C6.37 9.72 7.253 21.5 10.953 21.5 13.918 21.5 23 12.876 23 6.722 23 3.946 21.864 2.5 19.333 2.5c-2.53 0 -5.162 1.661 -5.714 4.998 2.513 -1.52 3.877 0.653 2.715 3.055 -1.161 2.402 -2.363 3.98 -3.217 3.98 -2.386 0 -0.62 -12.033 -5.307 -12.033C5.006 2.5 1 7.557 1 7.557Z" />
+</vector>

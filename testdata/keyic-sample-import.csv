@@ -1,0 +1,102 @@
+name,type,url,username,password,totp,notes,folder,card_expiry,card_cvv,icon,favorite
+Google,LOGIN,https://accounts.google.com,demo.user@gmail.com,G00gle!Test2026,JBSWY3DPEHPK3PXP,Primary Google with TOTP,social,,,google,true
+GitHub,LOGIN,https://github.com,octocat-demo,gh_pat_demo_OnlyForTest!,,Sample GitHub account,dev,,,github,true
+Microsoft,LOGIN,https://login.microsoftonline.com,work.user@contoso.com,Msft#Office365!,,"Work Microsoft 365",work,,,microsoft,false
+Apple iCloud,LOGIN,https://www.icloud.com,apple.id@icloud.com,Appl3!Secure99,,iCloud test,personal,,,apple,false
+Amazon,LOGIN,https://www.amazon.com,shopper@example.com,Amzn-Cart-42!,,"Shopping account",shopping,,,amazon,false
+Netflix,LOGIN,https://www.netflix.com,stream@example.com,N3tflix#Watch99,,Family plan test,entertainment,,,netflix,true
+Spotify,LOGIN,https://open.spotify.com,music.lover,Sp0tify!Tunes,,Premium test,entertainment,,,spotify,false
+Discord,LOGIN,https://discord.com,DemoGamer#0001,D1scord!Chat,,,social,,,discord,false
+Reddit,LOGIN,https://www.reddit.com,u_demo_reader,R3ddit!Browse,,,social,,,reddit,false
+Facebook,LOGIN,https://www.facebook.com,fb.demo.user,Fb$ocialPass1,,,social,,,facebook,false
+Twitter / X,LOGIN,https://x.com,demo_tweeter,Tw33t!Demo99,,,social,,,x,false
+LinkedIn,LOGIN,https://www.linkedin.com,career.demo@example.com,L1nkedIn#Hire,,Job hunting profile,work,,,linkedin,false
+Slack Workspace,LOGIN,https://app.slack.com,team@example.com,Sl@ck#Work11,,Engineering workspace,work,,,slack,false
+Notion,LOGIN,https://www.notion.so,notes@example.com,N0tion!Docs,,Personal wiki,personal,,,notion,false
+Dropbox,LOGIN,https://www.dropbox.com,files@example.com,Dr0pbox!Cloud,,Cloud files,personal,,,dropbox,false
+PayPal,LOGIN,https://www.paypal.com,pay@example.com,PayP@l$afe88,,Payment test,finance,,,paypal,true
+Bank Demo,LOGIN,https://online.bank.example,100200300,Bank!Vault$2026,,Fake bank — demo only,finance,,,,false
+Steam,LOGIN,https://store.steampowered.com,gamer_demo,St3am!Play42,,Gaming account,entertainment,,,steam,false
+Twitch,LOGIN,https://www.twitch.tv,stream_demo,Tw1tch!Live,,Streamer login,entertainment,,,twitch,false
+Uber,LOGIN,https://auth.uber.com,rider@example.com,Ub3r!Ride99,,Rides account,travel,,,,false
+Airbnb,LOGIN,https://www.airbnb.com,host@example.com,A1rbnb!Stay,,Travel bookings,travel,,,,false
+Adobe,LOGIN,https://account.adobe.com,creative@example.com,Ad0be!CC2026,,Creative Cloud,work,,,adobe,false
+Zoom,LOGIN,https://zoom.us,meetings@example.com,Z00m!Meet11,,Work meetings,work,,,zoom,false
+ChatGPT,LOGIN,https://chatgpt.com,ai.user@example.com,0penAI!Chat,,AI assistant,dev,,,,false
+Weak Password Site,LOGIN,https://example.com,weakuser,password123,,Intentionally weak — for Security health,test,,,,false
+Reused Password A,LOGIN,https://a.example.com,same.user,SamePass!Everywhere,,Reused password pair 1,test,,,,false
+Reused Password B,LOGIN,https://b.example.com,same.user,SamePass!Everywhere,,Reused password pair 2,test,,,,false
+Auth App Style,LOGIN,https://auth.example.com,mfa@example.com,Mfa!Login99,otpauth://totp/Example:mfa@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Example,TOTP via otpauth URI,test,,,,false
+GitLab Work,LOGIN,https://gitlab.com,dev.ops@example.com,G1tLab!CI99,HXDMVJECJJWSRB3H,CI with TOTP,dev,,,gitlab,false
+AWS Console,LOGIN,https://console.aws.amazon.com,aws-demo,Aw5!CloudRoot!,GEZDGNBVGY3TQOJQ,Cloud root demo,dev,,,aws,true
+Home Wi-Fi,NOTE,,,,"SSID: Keyic-Home
+Password: Wifi!Demo2026
+Security: WPA2
+Hidden: no",home,,,,true
+Recovery Codes,NOTE,,,,"GitHub recovery codes (demo):
+a1b2-c3d4
+e5f6-g7h8
+i9j0-k1l2
+Keep offline only.",dev,,,,false
+Passport Scan Notes,NOTE,,,,"Passport MRZ notes — fictional.
+Doc: P<UTOERIKSSON<<ANNA<<<<<<<<<<<<<<<<<<<
+Issued: 2020-01-15 Expiry: 2030-01-15",travel,,,,false
+Server SSH Cheat Sheet,NOTE,,,,"Host: bastion.example.com
+User: deploy
+Port: 22
+Key: id_ed25519 (on device)",dev,,,,false
+Gift Ideas,NOTE,,,,"Mom: wool scarf
+Dad: coffee subscription
+Partner: concert tickets",personal,,,,false
+Insurance Policy,NOTE,,,,"Policy #INS-998877
+Provider: Demo Mutual
+Agent: 555-0100
+Renewal: March",finance,,,,false
+Visa Personal,CARD,,Alice Demo Holder,4111111111111111,,Primary Visa test card,finance,12/28,123,visa,true
+Mastercard Work,CARD,,Alice Demo Holder,5555555555554444,,Corporate card,work,06/27,456,,false
+Amex Travel,CARD,,Alice D Holder,378282246310005,,Travel Amex (demo),travel,09/29,7890,,false
+Discover Backup,CARD,,A Demo,6011111111111117,,Backup Discover,finance,03/30,321,,false
+UnionPay Demo,CARD,,Demo User,6250941006528599,,UnionPay sample,finance,11/26,888,,false
+Debit Everyday,CARD,,Alice Demo,4000000000000002,,Everyday debit,finance,01/27,111,,false
+Personal Identity,IDENTITY,,Alice Demo,,,Full name: Alice Demo
+DOB: 1990-05-12
+Phone: +1-555-0142
+Email: alice.demo@example.com
+Address: 100 Keyic Lane Apt 4
+City: Springfield
+ZIP: 12345,personal,,,,true
+Work Identity,IDENTITY,,Alice Contoso,,,Company: Contoso Ltd
+Title: Staff Engineer
+Badge: C-4421
+Office: Building 3 Floor 2
+Manager: Sam Rivera,work,,,,false
+Driver License,IDENTITY,,Alice Demo,,,License: D1234567
+State: CA
+Class: C
+Expires: 2029-08-01
+Address: 100 Keyic Lane,personal,,,,false
+Passport Identity,IDENTITY,,Alice Demo,,,Passport: X1234567A
+Country: US
+Issued: 2020-01-15
+Expires: 2030-01-15,travel,,,,false
+Emergency Contact,IDENTITY,,Sam Rivera,,,Relation: Friend
+Phone: +1-555-0199
+Email: sam.rivera@example.com,personal,,,,false
+Shipping Address,IDENTITY,,Alice Demo,,,Ship to: Alice Demo
+100 Keyic Lane Apt 4
+Springfield ST 12345
+US,shopping,,,,false
+Wifi Guest Note,NOTE,,,,"Guest Wi-Fi SSID: Keyic-Guest
+Password: GuestsWelcome!
+Valid until: end of week",home,,,,false
+Old Forum Login,LOGIN,https://forums.example.org,lurker99,forumPass!,,"Legacy forum — may be expired",test,,,,false
+Proton Mail,LOGIN,https://mail.proton.me,secure@pm.me,Pr0ton!Mail88,,Encrypted mail demo,personal,,,,false
+Bitbucket,LOGIN,https://bitbucket.org,repo.demo,B1tbucket!Git,,Alt git host,dev,,,,false
+DigitalOcean,LOGIN,https://cloud.digitalocean.com,droplet@example.com,D0cean!Wave,,VPS account,dev,,,,false
+Heroku,LOGIN,https://id.heroku.com,apps@example.com,H3roku!Deploy,,Legacy PaaS,dev,,,,false
+Instagram,LOGIN,https://www.instagram.com,photo.demo,Insta!Snap99,,,social,,,instagram,false
+Pinterest,LOGIN,https://www.pinterest.com,boards.demo,P1nterest!Pin,,,social,,,pinterest,false
+YouTube,LOGIN,https://www.youtube.com,creator@example.com,Y0uTube!Create,,Creator Studio,entertainment,,,youtube,false
+Hulu,LOGIN,https://www.hulu.com,watch@example.com,Hulu!Stream1,,Streaming,entertainment,,,,false
+Demo Card No Icon,CARD,,Bob Tester,4000000000000077,,Minimal card fields,finance,08/28,999,,false
+Demo Note Empty Meta,NOTE,,,,"Just a short secure note for empty-state testing.",test,,,,false

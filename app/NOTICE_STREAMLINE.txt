@@ -1,0 +1,17 @@
+Streamline Logos (bundled subset)
+================================
+
+Source: https://streamlinehq.com
+GitHub: https://github.com/webalys-hq/streamline-vectors
+Pack: Logos — solid style only
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+Imported unique brand logos from logos/solid (duplicate -1/-2/-3
+variants collapsed to one icon each). Files live in:
+  app/src/main/res/drawable/ic_brand_*.xml
+Catalog:
+  app/.../ui/brand/BrandCatalog.kt
+
+Attribution: credit Streamline and link https://streamlinehq.com
+(also shown in Keyic Settings → Appearance).

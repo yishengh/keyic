@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- G refined · larger shield frame + lock, cream on brand teal -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer shield ring (evenOdd) — scaled for adaptive safe zone -->
+    <path
+        android:fillColor="#F4F5F0"
+        android:fillType="evenOdd"
+        android:pathData="M54,18c17.5,7.5 33,10 33,10v27c0,22 -15.5,37.5 -33,44C36.5,92.5 21,77 21,55V28s15.5,-2.5 33,-10zM54,30c-13.2,5.6 -24.5,7.4 -24.5,7.4V55c0,16 11.5,28.5 24.5,34 13,-5.5 24.5,-18 24.5,-34V37.4S67.2,35.6 54,30z" />
+    <!-- Lock shackle -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M44,56v-5c0,-5.52 4.48,-10 10,-10s10,4.48 10,10v5"
+        android:strokeWidth="5.5"
+        android:strokeColor="#F4F5F0"
+        android:strokeLineCap="round" />
+    <!-- Lock body -->
+    <path
+        android:fillColor="#F4F5F0"
+        android:pathData="M38,56h32c2.76,0 5,2.24 5,5v14c0,2.76 -2.24,5 -5,5H38c-2.76,0 -5,-2.24 -5,-5V61c0,-2.76 2.24,-5 5,-5z" />
+</vector>
