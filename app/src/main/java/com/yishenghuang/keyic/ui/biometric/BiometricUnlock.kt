@@ -37,7 +37,7 @@ object BiometricUnlock {
         val cipher: Cipher = try {
             keyManager.createBiometricCipherForEncrypt()
         } catch (e: Exception) {
-            onError(e.message ?: activity.getString(R.string.error_biometric_failed))
+            onError(activity.getString(R.string.error_biometric_failed))
             return
         }
         val executor = ContextCompat.getMainExecutor(activity)
@@ -92,7 +92,7 @@ object BiometricUnlock {
         val cipher: Cipher = try {
             keyManager.createBiometricCipherForDecrypt()
         } catch (e: Exception) {
-            onError(e.message ?: activity.getString(R.string.error_biometric_failed))
+            onError(activity.getString(R.string.error_biometric_failed))
             return
         }
         val executor = ContextCompat.getMainExecutor(activity)
@@ -109,7 +109,7 @@ object BiometricUnlock {
                     try {
                         onSuccess(keyManager.unlockWithBiometricCipher(crypto))
                     } catch (e: Exception) {
-                        onError(e.message ?: activity.getString(R.string.error_biometric_failed))
+                        onError(activity.getString(R.string.error_biometric_failed))
                     }
                 }
 
@@ -118,6 +118,8 @@ object BiometricUnlock {
                         errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON
                     ) {
                         onError(errString.toString())
+                    } else {
+                        onError(activity.getString(R.string.error_cancelled))
                     }
                 }
             },

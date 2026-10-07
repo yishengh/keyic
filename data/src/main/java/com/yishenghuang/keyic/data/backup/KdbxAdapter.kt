@@ -15,14 +15,18 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import java.util.UUID
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /**
  * KeePass .kdbx import/export via KeePassJava2 (Jackson).
  * Maps custom string properties ↔ [CustomField]; binary properties ↔ attachments.
  */
 object KdbxAdapter {
+    private const val KEYIC_METADATA = "Keyic.Entry.v1"
+    private val metadataJson = Json { ignoreUnknownKeys = true }
     private val reservedProps = Entry.STANDARD_PROPERTY_NAMES.map { it.lowercase() }.toSet() +
-        setOf("otp", "totp seed", "totp", "timeotp-secret-base32")
+        setOf("otp", "totp seed", "totp", "timeotp-secret-base32", KEYIC_METADATA.lowercase())
 
     fun importKdbx(bytes: ByteArray, passphrase: CharArray): KdbxImportResult {
         val creds = KdbxCreds(String(passphrase).toByteArray(StandardCharsets.UTF_8))
@@ -50,16 +54,8 @@ object KdbxAdapter {
             entry.username = vault.username
             entry.password = vault.password
             entry.url = vault.url
-            entry.notes = buildString {
-                append(vault.notes)
-                if (!vault.totpSecret.isNullOrBlank()) {
-                    if (isNotEmpty()) append('\n')
-                    append("otpauth://totp/")
-                    append(vault.title)
-                    append("?secret=")
-                    append(vault.totpSecret)
-                }
-            }
+            entry.notes = vault.notes
+            entry.setProperty(KEYIC_METADATA, metadataJson.encodeToString(vault))
             if (!vault.totpSecret.isNullOrBlank()) {
                 entry.setProperty("otp", "otpauth://totp/${vault.title}?secret=${vault.totpSecret}")
             }
@@ -69,7 +65,11 @@ object KdbxAdapter {
                     entry.setProperty(name, field.value)
                 }
             }
-            binariesByEntryId[vault.id].orEmpty().forEach { binary ->
+            val binaries = binariesByEntryId[vault.id].orEmpty()
+            require(binaries.map { it.fileName.ifBlank { "attachment.bin" } }.distinct().size == binaries.size) {
+                "KeePass export requires distinct attachment names"
+            }
+            binaries.forEach { binary ->
                 val name = binary.fileName.ifBlank { "attachment.bin" }
                 entry.setBinaryProperty(name, binary.data)
             }
@@ -121,7 +121,9 @@ object KdbxAdapter {
                 }
             val entryId = UUID.randomUUID().toString()
             val type = detectType(entry, customFields)
-            out += VaultEntry(
+            val metadata = entry.getProperty(KEYIC_METADATA)?.takeIf { it.isNotBlank() }
+                ?.let { metadataJson.decodeFromString<VaultEntry>(it) }
+            val standard = VaultEntry(
                 id = entryId,
                 title = entry.title.orEmpty().ifBlank { "Untitled" },
                 type = type,
@@ -137,9 +139,10 @@ object KdbxAdapter {
                 updatedAt = now,
                 passwordChangedAt = now,
             )
+            out += metadata?.copy(id = entryId, title = standard.title, username = standard.username,
+                password = standard.password, url = standard.url, notes = standard.notes, deletedAt = null) ?: standard
             entry.binaryPropertyNames.forEach { binName ->
                 val data = entry.getBinaryProperty(binName) ?: return@forEach
-                if (data.isEmpty()) return@forEach
                 attachments += KdbxImportedAttachment(
                     entryId = entryId,
                     fileName = binName.ifBlank { "attachment.bin" },

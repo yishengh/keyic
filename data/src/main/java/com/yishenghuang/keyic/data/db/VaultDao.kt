@@ -9,6 +9,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "vault_entries")
@@ -66,6 +67,9 @@ interface VaultDao {
     )
     fun observeActive(): Flow<List<VaultEntryEntity>>
 
+    @Query("SELECT * FROM vault_entries WHERE deletedAt IS NULL")
+    suspend fun listActive(): List<VaultEntryEntity>
+
     @Query(
         """
         SELECT * FROM vault_entries
@@ -94,10 +98,10 @@ interface VaultDao {
     )
     suspend fun searchActive(q: String): List<VaultEntryEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsert(entity: VaultEntryEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsertAll(entities: List<VaultEntryEntity>)
 
     @Update

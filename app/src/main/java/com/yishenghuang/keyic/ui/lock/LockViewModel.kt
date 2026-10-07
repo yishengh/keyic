@@ -45,6 +45,7 @@ class LockViewModel(
         _state.update { it.copy(vaultName = value, errorRes = null, errorDetail = null) }
 
     fun setup() {
+        if (_state.value.busy) return
         val password = _state.value.password
         val confirm = _state.value.confirmPassword
         val fallback = getApplication<Application>().getString(R.string.vault_default_numbered)
@@ -66,8 +67,8 @@ class LockViewModel(
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
-                        errorRes = if (e.message.isNullOrBlank()) R.string.error_setup_failed else null,
-                        errorDetail = e.message,
+                        errorRes = R.string.error_setup_failed,
+                        errorDetail = null,
                         busy = false,
                     )
                 }
@@ -78,6 +79,7 @@ class LockViewModel(
     }
 
     fun unlock() {
+        if (_state.value.busy) return
         val password = _state.value.password
         if (password.isEmpty()) {
             _state.update { it.copy(errorRes = R.string.error_enter_master_password) }
@@ -85,8 +87,15 @@ class LockViewModel(
         }
         viewModelScope.launch {
             _state.update { it.copy(busy = true, errorRes = null, errorDetail = null) }
-            val ok = withContext(Dispatchers.Default) {
-                container.vaultSession.unlock(password.toCharArray())
+            val ok = try {
+                withContext(Dispatchers.Default) {
+                    container.vaultSession.unlock(password.toCharArray())
+                }
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                _state.update { it.copy(busy = false, errorRes = R.string.error_vault_open, password = "") }
+                return@launch
             }
             if (!ok) {
                 _state.update { it.copy(busy = false, errorRes = R.string.error_wrong_password) }
@@ -96,14 +105,25 @@ class LockViewModel(
         }
     }
 
+    fun biometricFailed() {
+        _state.update { it.copy(errorRes = R.string.error_biometric_failed, busy = false) }
+    }
+
     fun unlockWithDbKey(dbKey: ByteArray) {
         viewModelScope.launch {
             _state.update { it.copy(busy = true, errorRes = null, errorDetail = null) }
-            withContext(Dispatchers.Default) {
-                container.vaultSession.unlockWithBiometricKey(dbKey)
+            try {
+                withContext(Dispatchers.Default) {
+                    container.vaultSession.unlockWithBiometricKey(dbKey)
+                }
+                _state.update { it.copy(busy = false, password = "") }
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                _state.update { it.copy(busy = false, errorRes = R.string.error_vault_open) }
+            } finally {
+                dbKey.fill(0)
             }
-            dbKey.fill(0)
-            _state.update { it.copy(busy = false) }
         }
     }
 }

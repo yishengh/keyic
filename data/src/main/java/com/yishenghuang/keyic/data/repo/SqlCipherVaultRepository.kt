@@ -1,6 +1,7 @@
 package com.yishenghuang.keyic.data.repo
 
 import com.yishenghuang.keyic.core.model.VaultEntry
+import androidx.room.withTransaction
 import com.yishenghuang.keyic.core.model.VaultEntryDraft
 import com.yishenghuang.keyic.core.port.VaultRepository
 import com.yishenghuang.keyic.data.db.VaultDatabaseFactory
@@ -15,11 +16,11 @@ import java.util.UUID
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SqlCipherVaultRepository(
-    private val unlockedFlow: Flow<Boolean>,
+    private val session: com.yishenghuang.keyic.data.session.VaultSessionImpl,
 ) : VaultRepository {
     override val entries: Flow<List<VaultEntry>> =
-        unlockedFlow.flatMapLatest { unlocked ->
-            if (!unlocked || !VaultDatabaseFactory.isOpen()) {
+        session.databaseGeneration.flatMapLatest {
+            if (!VaultDatabaseFactory.isOpen()) {
                 flowOf(emptyList())
             } else {
                 VaultDatabaseFactory.requireOpen().vaultDao().observeActive()
@@ -28,8 +29,8 @@ class SqlCipherVaultRepository(
         }
 
     override val deletedEntries: Flow<List<VaultEntry>> =
-        unlockedFlow.flatMapLatest { unlocked ->
-            if (!unlocked || !VaultDatabaseFactory.isOpen()) {
+        session.databaseGeneration.flatMapLatest {
+            if (!VaultDatabaseFactory.isOpen()) {
                 flowOf(emptyList())
             } else {
                 VaultDatabaseFactory.requireOpen().vaultDao().observeDeleted()
@@ -94,8 +95,10 @@ class SqlCipherVaultRepository(
     }
 
     suspend fun replaceAll(entries: List<VaultEntry>) {
-        val dao = VaultDatabaseFactory.requireOpen().vaultDao()
-        dao.deleteAll()
-        dao.upsertAll(entries.map { it.toEntity() })
+        val db = VaultDatabaseFactory.requireOpen()
+        db.withTransaction {
+            db.vaultDao().deleteAll()
+            db.vaultDao().upsertAll(entries.map { it.toEntity() })
+        }
     }
 }

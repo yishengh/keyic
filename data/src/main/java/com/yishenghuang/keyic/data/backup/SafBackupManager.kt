@@ -82,18 +82,25 @@ class SafBackupManager(
         } catch (_: Exception) {
             return false
         }
-        val tree = DocumentFile.fromTreeUri(context, Uri.parse(treeUriString)) ?: return false
-        val fileName = backupFileName(vaultId)
-        val existing = tree.findFile(fileName)
-        val target = existing ?: tree.createFile("application/octet-stream", fileName)
-            ?: return false
+        var target: DocumentFile? = null
         return try {
-            context.contentResolver.openOutputStream(target.uri, "wt")?.use { out ->
+            val tree = DocumentFile.fromTreeUri(context, Uri.parse(treeUriString)) ?: return false
+            // Never truncate the last known-good backup; provider writes need not be atomic.
+            val fileName = backupFileName(vaultId).removeSuffix(".keyic") +
+                "-${System.currentTimeMillis()}-${java.util.UUID.randomUUID()}.keyic"
+            target = tree.createFile("application/octet-stream", fileName) ?: return false
+            val output = context.contentResolver.openOutputStream(target.uri, "wt")
+                ?: error("Could not open backup output")
+            output.use { out ->
                 out.write(bytes)
                 out.flush()
-            } != null
+            }
+            true
         } catch (_: Exception) {
+            runCatching { target?.delete() }
             false
+        } finally {
+            bytes.fill(0)
         }
     }
 

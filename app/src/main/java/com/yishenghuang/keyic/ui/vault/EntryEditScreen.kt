@@ -101,6 +101,7 @@ fun EntryEditScreen(
     var previousPassword by remember { mutableStateOf<String?>(null) }
     var loaded by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val resources = androidx.compose.ui.platform.LocalResources.current
     val app = context.applicationContext as KeyicApp
 
     val totpScanLauncher = rememberLauncherForActivityResult(
@@ -116,7 +117,7 @@ fun EntryEditScreen(
         val account = data.getStringExtra(ScanCaptureActivity.EXTRA_TOTP_ACCOUNT)
         if (title.isBlank() && !issuer.isNullOrBlank()) title = issuer
         if (username.isBlank() && !account.isNullOrBlank()) username = account
-        Toast.makeText(context, context.getString(R.string.scan_totp_filled), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, resources.getString(R.string.scan_totp_filled), Toast.LENGTH_SHORT).show()
     }
     val cardScanLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -135,7 +136,7 @@ fun EntryEditScreen(
         data.getStringExtra(ScanCaptureActivity.EXTRA_CARD_CVV)?.takeIf { it.isNotBlank() }?.let {
             cardCvv = it
         }
-        Toast.makeText(context, context.getString(R.string.scan_card_filled), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, resources.getString(R.string.scan_card_filled), Toast.LENGTH_SHORT).show()
     }
     val wifiScanLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -151,20 +152,20 @@ fun EntryEditScreen(
         if (title.isBlank()) title = ssid
         if (type == EntryType.NOTE) {
             val block = buildList {
-                add(context.getString(R.string.wifi_ssid_line, ssid))
+                add(resources.getString(R.string.wifi_ssid_line, ssid))
                 if (wifiPassword.isNotBlank()) {
-                    add(context.getString(R.string.wifi_password_line, wifiPassword))
+                    add(resources.getString(R.string.wifi_password_line, wifiPassword))
                 }
-                if (security.isNotBlank()) add(context.getString(R.string.wifi_security_line, security))
-                if (hidden) add(context.getString(R.string.wifi_hidden_line))
+                if (security.isNotBlank()) add(resources.getString(R.string.wifi_security_line, security))
+                if (hidden) add(resources.getString(R.string.wifi_hidden_line))
             }.joinToString("\n")
             notes = if (notes.isBlank()) block else "$notes\n$block"
         } else {
             if (username.isBlank()) username = ssid
             if (wifiPassword.isNotBlank()) password = wifiPassword
             val detailLines = buildList {
-                if (security.isNotBlank()) add(context.getString(R.string.wifi_security_line, security))
-                if (hidden) add(context.getString(R.string.wifi_hidden_line))
+                if (security.isNotBlank()) add(resources.getString(R.string.wifi_security_line, security))
+                if (hidden) add(resources.getString(R.string.wifi_hidden_line))
             }
             if (detailLines.isNotEmpty()) {
                 val block = detailLines.joinToString("\n")
@@ -172,7 +173,7 @@ fun EntryEditScreen(
             }
         }
         tags = tags + "wifi"
-        Toast.makeText(context, context.getString(R.string.scan_wifi_filled), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, resources.getString(R.string.scan_wifi_filled), Toast.LENGTH_SHORT).show()
     }
     val idScanLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -195,7 +196,7 @@ fun EntryEditScreen(
         data.getStringExtra(ScanCaptureActivity.EXTRA_ID_TITLE)?.takeIf { it.isNotBlank() }?.let { suggested ->
             if (title.isBlank()) title = suggested
         }
-        Toast.makeText(context, context.getString(R.string.scan_id_filled), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, resources.getString(R.string.scan_id_filled), Toast.LENGTH_SHORT).show()
     }
 
     LaunchedEffect(entryId) {
@@ -267,8 +268,7 @@ fun EntryEditScreen(
                     },
                     actions = {
                         TextButton(onClick = {
-                            viewModel.save(draft(), entryId, previousPassword)
-                            onDone()
+                            viewModel.save(draft(), entryId, previousPassword, onDone)
                         }) { Text(stringResource(R.string.action_save)) }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -669,8 +669,7 @@ fun EntryEditScreen(
 
                 Button(
                     onClick = {
-                        viewModel.save(draft(), entryId, previousPassword)
-                        onDone()
+                        viewModel.save(draft(), entryId, previousPassword, onDone)
                     },
                     modifier = Modifier
                         .fillMaxWidth()

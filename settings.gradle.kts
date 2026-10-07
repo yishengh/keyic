@@ -26,3 +26,4 @@ rootProject.name = "Keyic"
 include(":app")
 include(":core")
 include(":data")
+include(":keepass-android")

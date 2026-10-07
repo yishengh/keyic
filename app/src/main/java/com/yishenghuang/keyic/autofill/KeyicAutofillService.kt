@@ -53,6 +53,8 @@ class KeyicAutofillService : AutofillService() {
         val container = (application as KeyicApp).container
         scope.launch {
             try {
+                val settings = container.settingsRepository.get()
+                if (container.session.shouldAutoLock(android.os.SystemClock.elapsedRealtime(), settings.autoLockSeconds)) container.session.lock()
                 val unlocked = container.session.isUnlocked.first()
                 val builder = FillResponse.Builder()
                 attachSaveInfo(builder, parsed)
@@ -74,7 +76,7 @@ class KeyicAutofillService : AutofillService() {
                     builder.addDataset(datasetForEntry(entry, parsed))
                 }
                 val vaultCount = container.vaultRegistry.vaults.first().size
-                if (matched.isEmpty() && vaultCount > 1) {
+                if (vaultCount > 1) {
                     builder.addDataset(switchVaultDataset(parsed))
                 }
                 callback.onSuccess(builder.build())
@@ -174,6 +176,7 @@ class KeyicAutofillService : AutofillService() {
         val builder = Dataset.Builder(presentation)
         val intent = Intent(this, AutofillFillActivity::class.java).apply {
             putExtra(EXTRA_ENTRY_ID, entry.id)
+            putExtra(EXTRA_VAULT_ID, com.yishenghuang.keyic.data.db.VaultDatabaseFactory.currentVaultId())
             putParsedExtras(parsed)
         }
         val pending = PendingIntent.getActivity(
@@ -191,6 +194,7 @@ class KeyicAutofillService : AutofillService() {
         if (Build.VERSION.SDK_INT >= 31) PendingIntent.FLAG_MUTABLE else 0
 
     companion object {
+        const val EXTRA_VAULT_ID = "vault_id"
         const val EXTRA_ENTRY_ID = "entry_id"
         const val EXTRA_PACKAGE = "package"
         const val EXTRA_DOMAIN = "domain"
@@ -215,9 +219,11 @@ class KeyicAutofillService : AutofillService() {
                 setTextViewText(android.R.id.text1, label)
             }
             val builder = Dataset.Builder(presentation)
-            parsed.usernameId?.let { builder.setValue(it, AutofillValue.forText(entry.username)) }
-            parsed.passwordId?.let { builder.setValue(it, AutofillValue.forText(entry.password)) }
-            if (entry.type == EntryType.CARD || parsed.hasCardFields) {
+            if (entry.type == EntryType.LOGIN) {
+                parsed.usernameId?.let { builder.setValue(it, AutofillValue.forText(entry.username)) }
+                parsed.passwordId?.let { builder.setValue(it, AutofillValue.forText(entry.password)) }
+            }
+            if (entry.type == EntryType.CARD) {
                 parsed.cardNumberId?.let {
                     builder.setValue(it, AutofillValue.forText(entry.password))
                 }

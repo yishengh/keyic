@@ -1,6 +1,7 @@
 package com.yishenghuang.keyic.data
 
 import android.content.Context
+import androidx.room.withTransaction
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.yishenghuang.keyic.core.port.AttachmentRepository
@@ -33,10 +34,10 @@ class AppContainer(context: Context) {
     val vaultRegistry: VaultRegistry = DataStoreVaultRegistry(appContext)
     val session: VaultSessionImpl = VaultSessionImpl(appContext, vaultRegistry)
     val vaultSession: VaultSession = session
-    val vaultRepository: VaultRepository = SqlCipherVaultRepository(session.isUnlocked)
+    val vaultRepository: VaultRepository = SqlCipherVaultRepository(session)
     val sqlVaultRepository: SqlCipherVaultRepository =
         vaultRepository as SqlCipherVaultRepository
-    val attachmentRepository: AttachmentRepository =
+    val attachmentRepository: EncryptedAttachmentRepository =
         EncryptedAttachmentRepository(appContext, session)
     val settingsRepository: SettingsRepository = DataStoreSettingsRepository(appContext)
     val importExportPort: ImportExportPort = EncryptedJsonBackupPort()
@@ -45,6 +46,56 @@ class AppContainer(context: Context) {
 
     val keyManager: VaultKeyManager
         get() = session.currentKeyManager
+
+    suspend fun exportPortable(passphrase: CharArray, keepass: Boolean = false): ByteArray {
+        var snapshot: com.yishenghuang.keyic.core.port.EncryptedJsonImportResult? = null
+        return try {
+            snapshot = attachmentRepository.snapshot()
+            if (keepass) {
+                importExportPort.exportKdbx(snapshot.entries, passphrase,
+                    snapshot.attachments.groupBy { it.entryId }.mapValues { (_, atts) ->
+                        atts.map { com.yishenghuang.keyic.core.port.KdbxBinary(it.fileName, it.data) }
+                    })
+            } else importExportPort.exportEncryptedJson(snapshot.entries, passphrase, snapshot.attachments)
+        } finally {
+            passphrase.fill('\u0000')
+            snapshot?.attachments?.forEach { it.data.fill(0) }
+        }
+    }
+
+    suspend fun importPortable(bytes: ByteArray, passphrase: CharArray, keepass: Boolean = false): Int {
+        val vaultId = checkNotNull(session.activeVaultId.first())
+        check(session.isUnlocked.first()) { "Vault is locked" }
+        val result = try {
+            if (keepass) {
+                val imported = importExportPort.importKdbx(bytes, passphrase)
+                com.yishenghuang.keyic.core.port.EncryptedJsonImportResult(imported.entries,
+                    imported.attachments.map { att ->
+                        com.yishenghuang.keyic.core.port.JsonBackupAttachment(att.entryId,
+                            java.util.UUID.randomUUID().toString(), att.fileName, "application/octet-stream",
+                            System.currentTimeMillis(), att.data)
+                    })
+            } else importExportPort.importEncryptedJson(bytes, passphrase)
+        } finally {
+            passphrase.fill('\u0000')
+        }
+        attachmentRepository.importAtomically(result, replace = !keepass, expectedVaultId = vaultId)
+        return result.entries.size
+    }
+
+    suspend fun importCsv(drafts: List<com.yishenghuang.keyic.core.model.VaultEntryDraft>) {
+        session.withUnlockedVault { db, _, _ ->
+            db.withTransaction { drafts.forEach { vaultRepository.create(it) } }
+        }
+    }
+
+    suspend fun changeMasterPassword(current: CharArray, next: CharArray): Boolean = try {
+        session.withUnlockedVault { _, _, _ ->
+            val manager = keyManager
+            val verified = manager.unlockWithPassword(current) ?: return@withUnlockedVault false
+            try { manager.changeMasterPassword(verified, next) } finally { verified.fill(0) }
+        }
+    } finally { current.fill('\u0000'); next.fill('\u0000') }
 
     init {
         runBlocking { session.bootstrap() }
@@ -107,7 +158,7 @@ class AppContainer(context: Context) {
         for (entry in entries.filter { it.deletedAt == null }) {
             val metas = attachmentRepository.listForEntry(entry.id)
             for (meta in metas) {
-                val bytes = attachmentRepository.readDecrypted(meta.id) ?: continue
+                val bytes = attachmentRepository.readDecrypted(meta.id) ?: error("Attachment unavailable")
                 out += com.yishenghuang.keyic.core.port.JsonBackupAttachment(
                     entryId = entry.id,
                     id = meta.id,
@@ -147,12 +198,19 @@ class AppContainer(context: Context) {
             recordBackupHealth(false, err)
             return false to err
         }
-        val entries = vaultRepository.entries.first()
-        val vaultId = session.activeVaultId.first() ?: "default"
-        val attachments = collectBackupAttachments(entries)
-        val ok = runCatching {
-            safBackupManager.writeBackup(uri, entries, vaultId, attachments)
-        }.getOrDefault(false)
+        val ok = try {
+            val vaultId = checkNotNull(session.activeVaultId.first())
+            val snapshot = attachmentRepository.snapshot(vaultId)
+            try {
+                safBackupManager.writeBackup(uri, snapshot.entries, vaultId, snapshot.attachments)
+            } finally {
+                snapshot.attachments.forEach { it.data.fill(0) }
+            }
+        } catch (cancelled: kotlinx.coroutines.CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            false
+        }
         val err = if (ok) null else "Backup write failed"
         recordBackupHealth(ok, err)
         return ok to err

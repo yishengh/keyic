@@ -85,6 +85,7 @@ fun EntryDetailScreen(
     var confirmDelete by remember { mutableStateOf(false) }
     var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
     val context = LocalContext.current
+    val resources = androidx.compose.ui.platform.LocalResources.current
     val app = context.applicationContext as KeyicApp
     val scope = rememberCoroutineScope()
 
@@ -108,7 +109,7 @@ fun EntryDetailScreen(
                         }
                     }
                     val mimeType = resolver.getType(uri) ?: "application/octet-stream"
-                    val data = resolver.openInputStream(uri)?.use { it.readBytes() }
+                    val data = resolver.openInputStream(uri)?.use { com.yishenghuang.keyic.core.backup.BoundedInput.read(it, 5 * 1024 * 1024) }
                         ?: error("Could not read file")
                     Triple(fileName, mimeType, data)
                 }
@@ -120,7 +121,7 @@ fun EntryDetailScreen(
                     onDone = {
                         Toast.makeText(
                             context,
-                            context.getString(R.string.attachment_added),
+                            resources.getString(R.string.attachment_added),
                             Toast.LENGTH_SHORT,
                         ).show()
                     },
@@ -129,7 +130,7 @@ fun EntryDetailScreen(
                     },
                 )
             } catch (e: Exception) {
-                Toast.makeText(context, e.message ?: "Attach failed", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, resources.getString(R.string.operation_failed_safe), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -145,15 +146,17 @@ fun EntryDetailScreen(
             try {
                 val bytes = viewModel.readAttachment(pendingId) ?: error("Decrypt failed")
                 withContext(Dispatchers.IO) {
-                    context.contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
+                    try {
+                        (context.contentResolver.openOutputStream(uri, "wt") ?: error("Output unavailable")).use { it.write(bytes) }
+                    } finally { bytes.fill(0) }
                 }
                 Toast.makeText(
                     context,
-                    context.getString(R.string.attachment_exported),
+                    resources.getString(R.string.attachment_exported),
                     Toast.LENGTH_SHORT,
                 ).show()
             } catch (e: Exception) {
-                Toast.makeText(context, e.message ?: "Export failed", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, resources.getString(R.string.operation_failed_safe), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -415,7 +418,7 @@ fun EntryDetailScreen(
 
                 Text(stringResource(R.string.label_attachments), style = MaterialTheme.typography.labelLarge)
                 Text(
-                    "Max 5 MB per file, 20 MB per entry. Encrypted beside the vault.",
+                    stringResource(R.string.attachment_limits),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -532,7 +535,7 @@ private fun TotpCard(
                     modifier = Modifier.weight(1f),
                 )
                 IconButton(onClick = { onCopy(code) }) {
-                    Icon(Icons.Outlined.ContentCopy, contentDescription = "Copy code")
+                    Icon(Icons.Outlined.ContentCopy, contentDescription = stringResource(R.string.action_copy))
                 }
             }
             Spacer(Modifier.height(8.dp))
@@ -570,7 +573,7 @@ private fun CopyField(
             }
             trailing?.invoke()
             IconButton(onClick = onCopy) {
-                Icon(Icons.Outlined.ContentCopy, contentDescription = "Copy")
+                Icon(Icons.Outlined.ContentCopy, contentDescription = stringResource(R.string.action_copy))
             }
         }
     }

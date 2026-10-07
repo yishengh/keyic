@@ -22,6 +22,8 @@ class VaultSessionImpl(
     private val unlocked = MutableStateFlow(false)
     private val configured = MutableStateFlow(false)
     private val activeId = MutableStateFlow<String?>(null)
+    private val generation = MutableStateFlow(0L)
+    val databaseGeneration: Flow<Long> = generation.asStateFlow()
     private var keyManager: VaultKeyManager? = null
     private var dbKey: ByteArray? = null
     private var lastActiveAt: Long = 0L
@@ -56,43 +58,51 @@ class VaultSessionImpl(
     }
 
     override suspend fun setup(masterPassword: CharArray, vaultName: String) = mutex.withLock {
-        val id = if (registry.list().isEmpty()) LEGACY_VAULT_ID else UUID.randomUUID().toString()
-        val meta = VaultMeta(
-            id = id,
-            name = vaultName.trim().ifEmpty { "Vault 1" },
-            createdAt = System.currentTimeMillis(),
-        )
-        registry.add(meta)
-        registry.setActive(id)
-        bindVaultLocked(id)
-        VaultDatabaseFactory.deleteDatabase(context, id)
-        val key = currentKeyManager.setupWithPassword(masterPassword)
-        openLocked(id, key)
-        configured.value = true
+        try {
+            check(registry.list().isEmpty()) { "Vault already configured" }
+            createLocked(LEGACY_VAULT_ID, vaultName, masterPassword)
+        } finally { masterPassword.fill('\u0000') }
     }
 
-    override suspend fun createAdditionalVault(name: String, masterPassword: CharArray): Boolean =
-        mutex.withLock {
-            if (masterPassword.size < 8) {
-                masterPassword.fill('\u0000')
-                return@withLock false
-            }
-            lockLocked()
-            val id = UUID.randomUUID().toString()
-            val meta = VaultMeta(
-                id = id,
-                name = name.trim().ifEmpty { "Vault" },
-                createdAt = System.currentTimeMillis(),
-            )
-            registry.add(meta)
+    override suspend fun createAdditionalVault(name: String, masterPassword: CharArray): Boolean = mutex.withLock {
+        try {
+            if (masterPassword.size < 8) return@withLock false
+            createLocked(UUID.randomUUID().toString(), name, masterPassword)
+            true
+        } finally { masterPassword.fill('\u0000') }
+    }
+
+    private suspend fun createLocked(id: String, name: String, password: CharArray) {
+        require(password.size >= 8) { "Password too short" }
+        val manager = VaultKeyManager(context, id)
+        check(!manager.isConfigured() && !context.getDatabasePath(VaultDatabaseFactory.dbName(id)).exists()) {
+            "Existing vault data requires recovery"
+        }
+        val previousId = activeId.value
+        lockLocked()
+        try {
+            val key = manager.setupWithPassword(password)
+            openLocked(id, key, publish = false)
+            registry.add(VaultMeta(id, name.trim().ifEmpty { "Vault" }, System.currentTimeMillis()))
             registry.setActive(id)
             bindVaultLocked(id)
-            VaultDatabaseFactory.deleteDatabase(context, id)
-            val key = currentKeyManager.setupWithPassword(masterPassword)
-            openLocked(id, key)
             configured.value = true
-            true
+            unlocked.value = true
+            generation.value++
+        } catch (failure: Exception) {
+            lockLocked()
+            // Only this newly allocated, previously nonexistent vault may be rolled back.
+            manager.wipe()
+            VaultDatabaseFactory.deleteDatabase(context, id)
+            registry.remove(id)
+            if (previousId != null) bindVaultLocked(previousId) else {
+                activeId.value = null
+                keyManager = null
+            }
+            configured.value = registry.list().isNotEmpty()
+            throw failure
         }
+    }
 
     override suspend fun switchVault(vaultId: String) = mutex.withLock {
         if (activeId.value == vaultId && !unlocked.value) {
@@ -111,7 +121,9 @@ class VaultSessionImpl(
     override suspend fun deleteVault(vaultId: String): Boolean = mutex.withLock {
         val all = registry.list()
         if (all.size <= 1) return@withLock false
-        if (activeId.value == vaultId) lockLocked()
+        if (!unlocked.value || activeId.value != vaultId || all.none { it.id == vaultId }) return@withLock false
+        // Binding another vault must never retain the previous vault's open key/database.
+        lockLocked()
         VaultKeyManager(context, vaultId).wipe()
         VaultDatabaseFactory.deleteDatabase(context, vaultId)
         registry.remove(vaultId)
@@ -144,10 +156,21 @@ class VaultSessionImpl(
 
     override suspend fun lock() = mutex.withLock { lockLocked() }
 
+    /** Pin the database/key pair for a short atomic operation, including vault switching. */
+    suspend fun <T> withUnlockedVault(
+        expectedVaultId: String? = null,
+        block: suspend (com.yishenghuang.keyic.data.db.VaultDatabase, ByteArray, String) -> T,
+    ): T = mutex.withLock {
+        check(unlocked.value) { "Vault is locked" }
+        val id = checkNotNull(activeId.value)
+        check(expectedVaultId == null || expectedVaultId == id) { "Vault changed" }
+        block(VaultDatabaseFactory.requireOpen(), checkNotNull(dbKey), id)
+    }
+
     override fun peekDbKey(): ByteArray? = dbKey?.copyOf()
 
     override fun touch() {
-        lastActiveAt = System.currentTimeMillis()
+        lastActiveAt = android.os.SystemClock.elapsedRealtime()
     }
 
     override fun shouldAutoLock(nowMillis: Long, autoLockSeconds: Int): Boolean {
@@ -168,20 +191,25 @@ class VaultSessionImpl(
     private fun lockLocked() {
         dbKey?.fill(0)
         dbKey = null
-        VaultDatabaseFactory.close()
-        unlocked.value = false
+        try {
+            VaultDatabaseFactory.close()
+        } finally {
+            unlocked.value = false
+            generation.value++
+        }
     }
 
-    private fun openLocked(vaultId: String, key: ByteArray) {
-        dbKey?.fill(0)
-        dbKey = key
+    private fun openLocked(vaultId: String, key: ByteArray, publish: Boolean = true) {
+        lockLocked()
         try {
             VaultDatabaseFactory.getOrOpen(context, vaultId, key)
-        } catch (_: Exception) {
-            VaultDatabaseFactory.deleteDatabase(context, vaultId)
-            VaultDatabaseFactory.getOrOpen(context, vaultId, key)
+        } catch (failure: Exception) {
+            key.fill(0)
+            throw failure
         }
-        unlocked.value = true
+        dbKey = key
+        unlocked.value = publish
+        if (publish) generation.value++
         touch()
     }
 }

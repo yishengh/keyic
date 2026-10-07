@@ -41,7 +41,7 @@ import com.yishenghuang.keyic.ui.theme.KeyicTheme
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.first
 
-class AutofillSaveActivity : ComponentActivity() {
+class AutofillSaveActivity : SecureAutofillActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -92,21 +92,23 @@ class AutofillSaveActivity : ComponentActivity() {
                         OutlinedTextField(
                             value = title,
                             onValueChange = { title = it },
-                            label = { Text("Title") },
+                            label = { Text(getString(R.string.label_title)) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.medium,
                         )
                         OutlinedTextField(
                             value = user,
                             onValueChange = { user = it },
-                            label = { Text("Username") },
+                            label = { Text(getString(R.string.label_username_email)) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.medium,
                         )
                         OutlinedTextField(
+                            visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
                             value = pass,
                             onValueChange = { pass = it },
-                            label = { Text("Password") },
+                            label = { Text(getString(R.string.label_password)) },
                             modifier = Modifier.fillMaxWidth(),
                             shape = MaterialTheme.shapes.medium,
                         )
@@ -122,51 +124,15 @@ class AutofillSaveActivity : ComponentActivity() {
                                         val host = d.removePrefix("www.")
                                         if (host.startsWith("http")) host else "https://$host"
                                     }.orEmpty()
-                                    // Update matching entry when same username + (pkg or domain)
-                                    val existing = app.container.vaultRepository.entries.first()
-                                        .firstOrNull { entry ->
-                                            entry.username.equals(user, ignoreCase = true) &&
-                                                (
-                                                    (pkg != null && entry.packageHints.any {
-                                                        it.equals(pkg, ignoreCase = true)
-                                                    }) ||
-                                                        (domain != null && (
-                                                            entry.url.contains(
-                                                                domain.removePrefix("www."),
-                                                                ignoreCase = true,
-                                                            ) ||
-                                                                entry.packageHints.any {
-                                                                    it.contains(
-                                                                        domain.removePrefix("www."),
-                                                                        ignoreCase = true,
-                                                                    )
-                                                                }
-                                                            ))
-                                                    )
+                                    try {
+                                        app.container.session.withUnlockedVault { _, _, _ ->
+                                            app.container.vaultRepository.create(VaultEntryDraft(
+                                                title = title.ifBlank { defaultTitle }, username = user,
+                                                password = pass, url = url, packageHints = hints.toList()))
                                         }
-                                    if (existing != null) {
-                                        val mergedHints =
-                                            (existing.packageHints + hints).distinct()
-                                        app.container.vaultRepository.upsert(
-                                            existing.copy(
-                                                title = title.ifBlank { existing.title },
-                                                password = pass,
-                                                url = url.ifBlank { existing.url },
-                                                packageHints = mergedHints,
-                                                updatedAt = System.currentTimeMillis(),
-                                                passwordChangedAt = System.currentTimeMillis(),
-                                            ),
-                                        )
-                                    } else {
-                                        app.container.vaultRepository.create(
-                                            VaultEntryDraft(
-                                                title = title.ifBlank { defaultTitle },
-                                                username = user,
-                                                password = pass,
-                                                url = url,
-                                                packageHints = hints.toList(),
-                                            ),
-                                        )
+                                    } catch (_: Exception) {
+                                        Toast.makeText(this@AutofillSaveActivity, R.string.operation_failed_safe, Toast.LENGTH_LONG).show()
+                                        return@launch
                                     }
                                     app.container.requestSafBackup()
                                     Toast.makeText(

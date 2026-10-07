@@ -48,15 +48,17 @@ class EncryptedJsonBackupPort : ImportExportPort {
         )
         val plain = json.encodeToString(payload).toByteArray(Charsets.UTF_8)
         val salt = ByteArray(16).also { random.nextBytes(it) }
-        val key = derive(passphrase, salt)
+        var key: ByteArray? = null
         return try {
+            key = derive(passphrase, salt)
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
             cipher.init(Cipher.ENCRYPT_MODE, SecretKeySpec(key, "AES"))
             val iv = cipher.iv
+            require(plain.size <= com.yishenghuang.keyic.core.backup.BoundedInput.MAX_BYTES - 50) { "Backup exceeds size limit" }
             val ct = cipher.doFinal(plain)
             MAGIC + salt + iv + ct
         } finally {
-            key.fill(0)
+            key?.fill(0)
             plain.fill(0)
             passphrase.fill('\u0000')
         }
@@ -66,24 +68,28 @@ class EncryptedJsonBackupPort : ImportExportPort {
         bytes: ByteArray,
         passphrase: CharArray,
     ): EncryptedJsonImportResult {
-        require(bytes.size > MAGIC.size + 16 + 12) { "Backup file too small" }
-        require(bytes.copyOfRange(0, MAGIC.size).contentEquals(MAGIC)) { "Not a Keyic v1 backup" }
-        val salt = bytes.copyOfRange(MAGIC.size, MAGIC.size + 16)
-        val iv = bytes.copyOfRange(MAGIC.size + 16, MAGIC.size + 28)
-        val ct = bytes.copyOfRange(MAGIC.size + 28, bytes.size)
-        val key = derive(passphrase, salt)
+        var key: ByteArray? = null
+        var plain: ByteArray? = null
         return try {
+            require(bytes.size >= MAGIC.size + 16 + 12 + 16 &&
+                bytes.size <= com.yishenghuang.keyic.core.backup.BoundedInput.MAX_BYTES) { "Invalid backup size" }
+            require(bytes.copyOfRange(0, MAGIC.size).contentEquals(MAGIC)) { "Not a Keyic backup" }
+            val salt = bytes.copyOfRange(MAGIC.size, MAGIC.size + 16)
+            val iv = bytes.copyOfRange(MAGIC.size + 16, MAGIC.size + 28)
+            key = derive(passphrase, salt)
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
             cipher.init(Cipher.DECRYPT_MODE, SecretKeySpec(key, "AES"), GCMParameterSpec(128, iv))
-            val plain = cipher.doFinal(ct)
+            plain = cipher.doFinal(bytes, MAGIC.size + 28, bytes.size - MAGIC.size - 28)
             val payload = json.decodeFromString<BackupPayload>(plain.toString(Charsets.UTF_8))
-            plain.fill(0)
-            EncryptedJsonImportResult(
-                entries = payload.entries.map { it.toDomain() },
-                attachments = payload.attachments.map { it.toDomain() },
-            )
+            require(payload.schema in 1..3) { "Unsupported backup version" }
+            require(payload.entries.map { it.id }.toSet().size == payload.entries.size) { "Duplicate entry IDs" }
+            require(payload.entries.all { it.id.isNotBlank() }) { "Invalid entry ID" }
+            val ids = payload.entries.map { it.id }.toSet()
+            require(payload.attachments.all { it.entryId in ids }) { "Orphan attachment" }
+            EncryptedJsonImportResult(payload.entries.map { it.toDomain() }, payload.attachments.map { it.toDomain() })
         } finally {
-            key.fill(0)
+            plain?.fill(0)
+            key?.fill(0)
             passphrase.fill('\u0000')
         }
     }
@@ -189,8 +195,7 @@ private fun VaultEntry.toBackup() = BackupEntryDto(
 private fun BackupEntryDto.toDomain() = VaultEntry(
     id = id,
     title = title,
-    type = runCatching { com.yishenghuang.keyic.core.model.EntryType.valueOf(type) }
-        .getOrDefault(com.yishenghuang.keyic.core.model.EntryType.LOGIN),
+    type = com.yishenghuang.keyic.core.model.EntryType.valueOf(type),
     username = username,
     password = password,
     url = url,

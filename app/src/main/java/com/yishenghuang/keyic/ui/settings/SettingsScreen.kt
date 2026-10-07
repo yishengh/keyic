@@ -38,6 +38,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -76,6 +78,7 @@ fun SettingsScreen(container: AppContainer) {
         initialValue = com.yishenghuang.keyic.core.model.AppSettings(),
     )
     val context = LocalContext.current
+    val resources = androidx.compose.ui.platform.LocalResources.current
     val app = context.applicationContext as KeyicApp
     val scope = rememberCoroutineScope()
     val vaultVm: VaultViewModel = viewModel(factory = VaultViewModelFactory(container))
@@ -93,6 +96,8 @@ fun SettingsScreen(container: AppContainer) {
     var currentPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    val activeVaultId by container.session.activeVaultId.collectAsStateWithLifecycle(initialValue = null)
+    var biometricEnabled by remember(activeVaultId) { mutableStateOf(container.keyManager.isBiometricEnabled()) }
     val vaultState by vaultVm.uiState.collectAsStateWithLifecycle()
     val folderOk = remember(settings.safTreeUri) { container.isSafFolderAvailable() }
 
@@ -123,10 +128,12 @@ fun SettingsScreen(container: AppContainer) {
         endPicker()
         if (uri != null) {
             val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
-                Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-            runCatching {
+                Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            try {
                 context.contentResolver.takePersistableUriPermission(uri, flags)
+            } catch (_: SecurityException) {
+                Toast.makeText(context, R.string.error_saf_permission, Toast.LENGTH_LONG).show()
+                return@rememberLauncherForActivityResult
             }
             pendingTreeUri = uri
             showSafPassDialog = true
@@ -141,20 +148,19 @@ fun SettingsScreen(container: AppContainer) {
             try {
                 val text = withContext(Dispatchers.IO) {
                     context.contentResolver.openInputStream(uri)
-                        ?.bufferedReader()
-                        ?.use { it.readText() }
-                        .orEmpty()
+                        ?.use { com.yishenghuang.keyic.core.backup.BoundedInput.read(it, 8 * 1024 * 1024).toString(Charsets.UTF_8) }
+                        ?: error("Input unavailable")
                 }
                 val drafts = CsvImportParser.parse(text)
                 if (drafts.isEmpty()) {
-                    Toast.makeText(context, context.getString(R.string.toast_csv_empty), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, resources.getString(R.string.toast_csv_empty), Toast.LENGTH_SHORT).show()
                 } else {
                     vaultVm.importCsvDrafts(
                         drafts = drafts,
                         onDone = { count ->
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.toast_csv_imported, count),
+                                resources.getString(R.string.toast_csv_imported, count),
                                 Toast.LENGTH_SHORT,
                             ).show()
                         },
@@ -164,7 +170,7 @@ fun SettingsScreen(container: AppContainer) {
                     )
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, e.message ?: "CSV import failed", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, resources.getString(R.string.operation_failed_safe), Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -196,22 +202,23 @@ fun SettingsScreen(container: AppContainer) {
                 val entries = container.vaultRepository.entries.first()
                 val csv = CsvImportParser.export(entries)
                 withContext(Dispatchers.IO) {
-                    context.contentResolver.openOutputStream(uri)?.use { out ->
+                    (context.contentResolver.openOutputStream(uri, "wt") ?: error("Output unavailable")).use { out ->
                         out.write(csv.toByteArray(Charsets.UTF_8))
                     }
                 }
                 Toast.makeText(
                     context,
-                    context.getString(R.string.toast_csv_exported, entries.size),
+                    resources.getString(R.string.toast_csv_exported, entries.size),
                     Toast.LENGTH_SHORT,
                 ).show()
             } catch (e: Exception) {
-                Toast.makeText(context, e.message ?: "CSV export failed", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, resources.getString(R.string.operation_failed_safe), Toast.LENGTH_LONG).show()
             }
         }
     }
 
     if (showAboutHelp) {
+        androidx.activity.compose.BackHandler { showAboutHelp = false }
         AboutHelpScreen(onBack = { showAboutHelp = false })
         return
     }
@@ -228,14 +235,14 @@ fun SettingsScreen(container: AppContainer) {
         SettingRow(
             title = stringResource(R.string.settings_biometric),
             subtitle = stringResource(R.string.settings_biometric_sub),
-            checked = settings.biometricEnabled,
+            checked = biometricEnabled,
             onCheckedChange = { enabled ->
                 val activity = context.findFragmentActivity()
                 if (enabled) {
                     if (activity == null || !BiometricUnlock.canAuthenticate(activity)) {
                         Toast.makeText(
                             context,
-                            context.getString(R.string.biometrics_unavailable),
+                            resources.getString(R.string.biometrics_unavailable),
                             Toast.LENGTH_SHORT,
                         ).show()
                         return@SettingRow
@@ -244,7 +251,7 @@ fun SettingsScreen(container: AppContainer) {
                     if (dbKey == null) {
                         Toast.makeText(
                             context,
-                            context.getString(R.string.unlock_vault_first),
+                            resources.getString(R.string.unlock_vault_first),
                             Toast.LENGTH_SHORT,
                         ).show()
                         return@SettingRow
@@ -255,6 +262,7 @@ fun SettingsScreen(container: AppContainer) {
                         keyManager = container.keyManager,
                         dbKey = dbKey,
                         onSuccess = {
+                            biometricEnabled = true
                             dbKey.fill(0)
                             (context.applicationContext as KeyicApp).endExternalUi()
                             scope.launch {
@@ -264,14 +272,14 @@ fun SettingsScreen(container: AppContainer) {
                             }
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.biometric_enabled),
+                                resources.getString(R.string.biometric_enabled),
                                 Toast.LENGTH_SHORT,
                             ).show()
                         },
                         onError = { msg ->
                             dbKey.fill(0)
                             (context.applicationContext as KeyicApp).endExternalUi()
-                            if (msg != context.getString(R.string.error_cancelled)) {
+                            if (msg != resources.getString(R.string.error_cancelled)) {
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }
                         },
@@ -279,6 +287,7 @@ fun SettingsScreen(container: AppContainer) {
                     return@SettingRow
                 } else {
                     container.keyManager.disableBiometric()
+                    biometricEnabled = false
                     scope.launch {
                         container.settingsRepository.update { it.copy(biometricEnabled = false) }
                     }
@@ -362,7 +371,7 @@ fun SettingsScreen(container: AppContainer) {
                 } else {
                     Toast.makeText(
                         context,
-                        context.getString(R.string.settings_autofill_unsupported),
+                        resources.getString(R.string.settings_autofill_unsupported),
                         Toast.LENGTH_SHORT,
                     ).show()
                 }
@@ -473,7 +482,7 @@ fun SettingsScreen(container: AppContainer) {
             )
             else -> stringResource(
                 R.string.backup_failed_detail,
-                settings.lastSafBackupError ?: "error",
+                stringResource(R.string.error_backup_failed),
             )
         }
         val statusColor = when {
@@ -517,7 +526,7 @@ fun SettingsScreen(container: AppContainer) {
                     if (enabled && !container.safBackupManager.hasPassphrase()) {
                         Toast.makeText(
                             context,
-                            context.getString(R.string.set_sync_passphrase_first),
+                            resources.getString(R.string.set_sync_passphrase_first),
                             Toast.LENGTH_SHORT,
                         ).show()
                         showSafPassDialog = true
@@ -568,7 +577,7 @@ fun SettingsScreen(container: AppContainer) {
                         scope.launch {
                             Toast.makeText(
                                 context,
-                                if (ok) "Backup OK" else (err ?: UserError.backupFailed(context).text),
+                                resources.getString(if (ok) R.string.operation_succeeded else R.string.operation_failed_safe),
                                 Toast.LENGTH_SHORT,
                             ).show()
                         }
@@ -739,6 +748,8 @@ fun SettingsScreen(container: AppContainer) {
                         onValueChange = { safPassphrase = it },
                         label = { Text(stringResource(R.string.label_passphrase)) },
                         singleLine = true,
+                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
                     )
                 }
             },
@@ -752,7 +763,7 @@ fun SettingsScreen(container: AppContainer) {
                     if (uri == null || pass.length < 6) {
                         Toast.makeText(
                             context,
-                            context.getString(R.string.passphrase_min_6),
+                            resources.getString(R.string.passphrase_min_6),
                             Toast.LENGTH_SHORT,
                         ).show()
                         return@TextButton
@@ -770,7 +781,7 @@ fun SettingsScreen(container: AppContainer) {
                         container.requestSafBackup()
                         Toast.makeText(
                             context,
-                            context.getString(R.string.sync_folder_linked),
+                            resources.getString(R.string.sync_folder_linked),
                             Toast.LENGTH_SHORT,
                         ).show()
                     }
@@ -823,18 +834,24 @@ fun SettingsScreen(container: AppContainer) {
                         onValueChange = { currentPassword = it },
                         label = { Text(stringResource(R.string.settings_current_password)) },
                         singleLine = true,
+                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
                     )
                     OutlinedTextField(
                         value = newPassword,
                         onValueChange = { newPassword = it },
                         label = { Text(stringResource(R.string.settings_new_password)) },
                         singleLine = true,
+                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
                     )
                     OutlinedTextField(
                         value = confirmPassword,
                         onValueChange = { confirmPassword = it },
                         label = { Text(stringResource(R.string.settings_confirm_new_password)) },
                         singleLine = true,
+                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
                     )
                 }
             },
@@ -851,7 +868,7 @@ fun SettingsScreen(container: AppContainer) {
                         if (next.length < 8) {
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.error_new_password_short),
+                                resources.getString(R.string.error_new_password_short),
                                 Toast.LENGTH_SHORT,
                             ).show()
                             return@launch
@@ -859,29 +876,19 @@ fun SettingsScreen(container: AppContainer) {
                         if (next != confirm) {
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.error_passwords_mismatch),
+                                resources.getString(R.string.error_passwords_mismatch),
                                 Toast.LENGTH_SHORT,
                             ).show()
                             return@launch
                         }
-                        val verified = withContext(Dispatchers.Default) {
-                            container.keyManager.unlockWithPassword(current.toCharArray())
-                        }
-                        if (verified == null) {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.error_current_password),
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                            return@launch
-                        }
-                        val ok = withContext(Dispatchers.Default) {
-                            container.keyManager.changeMasterPassword(verified, next.toCharArray())
-                        }
-                        verified.fill(0)
+                        val ok = try {
+                            withContext(Dispatchers.IO) {
+                                container.changeMasterPassword(current.toCharArray(), next.toCharArray())
+                            }
+                        } catch (_: Exception) { false }
                         Toast.makeText(
                             context,
-                            if (ok) "Master password updated" else "Could not change password",
+                            resources.getString(if (ok) R.string.password_updated else R.string.operation_failed_safe),
                             Toast.LENGTH_SHORT,
                         ).show()
                     }
@@ -908,10 +915,10 @@ fun SettingsScreen(container: AppContainer) {
             title = {
                 Text(
                     when (mode) {
-                        BackupMode.Export -> "Backup passphrase"
-                        BackupMode.Import -> "Restore passphrase"
-                        BackupMode.ImportKdbx -> "KeePass password"
-                        BackupMode.ExportKdbx -> "KeePass password"
+                        BackupMode.Export -> stringResource(R.string.backup_passphrase_title)
+                        BackupMode.Import -> stringResource(R.string.restore_passphrase_title)
+                        BackupMode.ImportKdbx -> stringResource(R.string.keepass_passphrase_title)
+                        BackupMode.ExportKdbx -> stringResource(R.string.keepass_passphrase_title)
                     },
                 )
             },
@@ -919,10 +926,10 @@ fun SettingsScreen(container: AppContainer) {
                 Column {
                     Text(
                         when (mode) {
-                            BackupMode.Export, BackupMode.Import ->
-                                "This passphrase protects the backup file (separate from master password)."
+                            BackupMode.Export -> stringResource(R.string.backup_passphrase_help)
+                            BackupMode.Import -> stringResource(R.string.restore_replace_warning)
                             BackupMode.ImportKdbx, BackupMode.ExportKdbx ->
-                                "Enter the KeePass database password."
+                                stringResource(R.string.keepass_passphrase_help)
                         },
                     )
                     Spacer(Modifier.height(8.dp))
@@ -931,147 +938,47 @@ fun SettingsScreen(container: AppContainer) {
                         onValueChange = { backupPassphrase = it },
                         label = { Text(stringResource(R.string.label_passphrase)) },
                         singleLine = true,
+                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Password),
                     )
                 }
             },
             confirmButton = {
-                TextButton(onClick = {
+                TextButton(enabled = backupPassphrase.isNotEmpty() &&
+                    (mode == BackupMode.Import || mode == BackupMode.ImportKdbx || backupPassphrase.length >= 8), onClick = {
                     val passphrase = backupPassphrase
                     showBackupDialog = null
                     backupPassphrase = ""
                     scope.launch {
                         try {
-                            when (mode) {
-                                BackupMode.Export -> {
-                                    val uri = pendingExportUri ?: return@launch
-                                    val entries = container.vaultRepository.entries.first()
-                                    val attachments = container.collectBackupAttachments(entries)
-                                    val bytes = withContext(Dispatchers.Default) {
-                                        container.importExportPort.exportEncryptedJson(
-                                            entries,
-                                            passphrase.toCharArray(),
-                                            attachments,
-                                        )
+                            withContext(Dispatchers.IO) {
+                                when (mode) {
+                                    BackupMode.Export, BackupMode.ExportKdbx -> {
+                                        val uri = checkNotNull(pendingExportUri)
+                                        val bytes = container.exportPortable(passphrase.toCharArray(), mode == BackupMode.ExportKdbx)
+                                        try {
+                                            val output = context.contentResolver.openOutputStream(uri, "wt")
+                                                ?: error("Output unavailable")
+                                            output.use { it.write(bytes); it.flush() }
+                                        } finally { bytes.fill(0) }
                                     }
-                                    context.contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.toast_backup_exported),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                                }
-                                BackupMode.Import -> {
-                                    val uri = pendingImportUri ?: return@launch
-                                    val bytes = context.contentResolver.openInputStream(uri)
-                                        ?.use { it.readBytes() }
-                                        ?: return@launch
-                                    val result = withContext(Dispatchers.Default) {
-                                        container.importExportPort.importEncryptedJson(
-                                            bytes,
-                                            passphrase.toCharArray(),
-                                        )
-                                    }
-                                    container.sqlVaultRepository.replaceAll(result.entries)
-                                    result.attachments.forEach { att ->
-                                        runCatching {
-                                            container.attachmentRepository.add(
-                                                entryId = att.entryId,
-                                                fileName = att.fileName,
-                                                mimeType = att.mimeType,
-                                                plainBytes = att.data.copyOf(),
-                                            )
+                                    BackupMode.Import, BackupMode.ImportKdbx -> {
+                                        val uri = checkNotNull(if (mode == BackupMode.Import) pendingImportUri else pendingKdbxUri)
+                                        val bytes = (context.contentResolver.openInputStream(uri)
+                                            ?: error("Input unavailable")).use {
+                                            com.yishenghuang.keyic.core.backup.BoundedInput.read(it)
                                         }
+                                        try {
+                                            container.importPortable(bytes, passphrase.toCharArray(), mode == BackupMode.ImportKdbx)
+                                        } finally { bytes.fill(0) }
                                     }
-                                    Toast.makeText(
-                                        context,
-                                        "Restored ${result.entries.size} entries",
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                                }
-                                BackupMode.ImportKdbx -> {
-                                    val uri = pendingKdbxUri ?: return@launch
-                                    val bytes = context.contentResolver.openInputStream(uri)
-                                        ?.use { it.readBytes() }
-                                        ?: return@launch
-                                    val result = withContext(Dispatchers.Default) {
-                                        container.importExportPort.importKdbx(
-                                            bytes,
-                                            passphrase.toCharArray(),
-                                        )
-                                    }
-                                    result.entries.forEach { entry: VaultEntry ->
-                                        container.vaultRepository.create(
-                                            VaultEntryDraft(
-                                                title = entry.title,
-                                                type = entry.type,
-                                                username = entry.username,
-                                                password = entry.password,
-                                                url = entry.url,
-                                                packageHints = entry.packageHints,
-                                                totpSecret = entry.totpSecret,
-                                                notes = entry.notes,
-                                                tags = entry.tags,
-                                                favorite = entry.favorite,
-                                                cardExpiry = entry.cardExpiry,
-                                                cardCvv = entry.cardCvv,
-                                                iconKey = entry.iconKey,
-                                                customFields = entry.customFields,
-                                            ),
-                                        ).also { created ->
-                                            result.attachments
-                                                .filter { it.entryId == entry.id }
-                                                .forEach { att ->
-                                                    runCatching {
-                                                        container.attachmentRepository.add(
-                                                            entryId = created.id,
-                                                            fileName = att.fileName,
-                                                            mimeType = "application/octet-stream",
-                                                            plainBytes = att.data,
-                                                        )
-                                                    }
-                                                }
-                                        }
-                                    }
-                                    container.requestSafBackup()
-                                    Toast.makeText(
-                                        context,
-                                        "Imported ${result.entries.size} KeePass entries",
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
-                                }
-                                BackupMode.ExportKdbx -> {
-                                    val uri = pendingExportUri ?: return@launch
-                                    val entries = container.vaultRepository.entries.first()
-                                    val binaries = mutableMapOf<String, List<KdbxBinary>>()
-                                    entries.forEach { entry ->
-                                        val atts = container.attachmentRepository.listForEntry(entry.id)
-                                        if (atts.isEmpty()) return@forEach
-                                        val list = atts.mapNotNull { meta ->
-                                            val data = container.attachmentRepository.readDecrypted(meta.id)
-                                                ?: return@mapNotNull null
-                                            KdbxBinary(meta.fileName, data)
-                                        }
-                                        if (list.isNotEmpty()) binaries[entry.id] = list
-                                    }
-                                    val bytes = withContext(Dispatchers.Default) {
-                                        container.importExportPort.exportKdbx(
-                                            entries,
-                                            passphrase.toCharArray(),
-                                            binaries,
-                                        )
-                                    }
-                                    context.contentResolver.openOutputStream(uri)?.use { it.write(bytes) }
-                                    Toast.makeText(
-                                        context,
-                                        context.getString(R.string.toast_kdbx_exported),
-                                        Toast.LENGTH_SHORT,
-                                    ).show()
                                 }
                             }
+                            Toast.makeText(context, resources.getString(R.string.operation_succeeded), Toast.LENGTH_SHORT).show()
                         } catch (e: Exception) {
                             Toast.makeText(
                                 context,
-                                e.message ?: "Operation failed",
+                                resources.getString(R.string.operation_failed_safe),
                                 Toast.LENGTH_LONG,
                             ).show()
                         }
@@ -1091,13 +998,14 @@ fun SettingsScreen(container: AppContainer) {
 private enum class BackupMode { Export, Import, ImportKdbx, ExportKdbx }
 
 private fun relativeTime(context: android.content.Context, epochMs: Long): String {
+    val resources = context.resources
     val delta = System.currentTimeMillis() - epochMs
     val minutes = TimeUnit.MILLISECONDS.toMinutes(delta)
     return when {
-        minutes < 1 -> context.getString(R.string.relative_just_now)
-        minutes < 60 -> context.getString(R.string.relative_minutes, minutes)
-        minutes < 60 * 24 -> context.getString(R.string.relative_hours, minutes / 60)
-        else -> context.getString(R.string.relative_days, minutes / (60 * 24))
+        minutes < 1 -> resources.getString(R.string.relative_just_now)
+        minutes < 60 -> resources.getString(R.string.relative_minutes, minutes)
+        minutes < 60 * 24 -> resources.getString(R.string.relative_hours, minutes / 60)
+        else -> resources.getString(R.string.relative_days, minutes / (60 * 24))
     }
 }
 
@@ -1126,7 +1034,7 @@ private fun SettingRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Switch(checked = checked, onCheckedChange = onCheckedChange)
+            Switch(checked = checked, onCheckedChange = onCheckedChange, modifier = Modifier.semantics { contentDescription = title })
         }
     }
 }

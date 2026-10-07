@@ -43,4 +43,28 @@ class DefaultAutofillMatcherTest {
             DefaultAutofillMatcher.normalizeDomain("https://www.example.com/path"),
         )
     }
+
+    private fun entry(url: String = "https://bank.example") = VaultEntry(
+        id = "synthetic", title = "Bank", url = url, favorite = true,
+        createdAt = 0, updatedAt = System.currentTimeMillis(), passwordChangedAt = 0,
+    )
+
+    @Test fun doesNotSuggestSecretsToLookalikeOrUnrelatedTargets() {
+        val matcher = DefaultAutofillMatcher()
+        for (host in listOf("evil.example", "bank.example.evil.test", "evilbank.example", "https://bank.example@evil.test")) {
+            assertTrue(matcher.match("com.evil.bank", host, listOf(entry())).isEmpty())
+        }
+        assertTrue(matcher.match("com.bank.evil", null,
+            listOf(entry().copy(packageHints = listOf("com.bank")))).isEmpty())
+        assertTrue(matcher.match("com.bank", null,
+            listOf(entry().copy(packageHints = listOf("com.bank")))).isNotEmpty())
+    }
+
+    @Test fun doesNotFillNotesOrLoginPasswordsIntoCardFields() {
+        val matcher = DefaultAutofillMatcher()
+        assertTrue(matcher.match(null, "bank.example", listOf(entry()), preferCards = true).isEmpty())
+        assertTrue(matcher.match(null, "bank.example",
+            listOf(entry().copy(type = com.yishenghuang.keyic.core.model.EntryType.NOTE))).isEmpty())
+        assertTrue(matcher.match(null, "bank.example", listOf(entry().copy(deletedAt = 1))).isEmpty())
+    }
 }

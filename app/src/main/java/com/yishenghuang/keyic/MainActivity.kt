@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onUserInteraction() {
         super.onUserInteraction()
-        (application as KeyicApp).container.vaultSession.touch()
+        (application as KeyicApp).onVaultInteraction()
     }
 }
 
@@ -128,7 +128,7 @@ private fun IdleAutoLock(autoLockSeconds: Int) {
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
                     // Check before touching — otherwise background idle never trips.
-                    if (session.shouldAutoLock(System.currentTimeMillis(), autoLockSeconds)) {
+                    if (session.shouldAutoLock(android.os.SystemClock.elapsedRealtime(), autoLockSeconds)) {
                         scope.launch { session.lock() }
                     } else {
                         session.touch()
@@ -147,7 +147,7 @@ private fun IdleAutoLock(autoLockSeconds: Int) {
         if (lifecycleState != Lifecycle.State.RESUMED) return@LaunchedEffect
         while (isActive) {
             delay(1_000L)
-            if (session.shouldAutoLock(System.currentTimeMillis(), autoLockSeconds)) {
+            if (session.shouldAutoLock(android.os.SystemClock.elapsedRealtime(), autoLockSeconds)) {
                 session.lock()
                 break
             }

@@ -40,7 +40,7 @@ object UserError {
 
     fun generic(context: Context, detail: String?): UiMessage =
         UiMessage(
-            detail?.ifBlank { null } ?: context.getString(R.string.error_generic),
+            context.getString(R.string.operation_failed_safe),
             isError = true,
         )
 

@@ -97,7 +97,11 @@ class VaultViewModel(
 
     suspend fun getEntry(id: String): VaultEntry? = container.vaultRepository.getById(id)
 
-    fun save(draft: VaultEntryDraft, existingId: String?, previousPassword: String?) {
+    private var saving = false
+
+    fun save(draft: VaultEntryDraft, existingId: String?, previousPassword: String?, onDone: () -> Unit = {}) {
+        if (saving) return
+        saving = true
         viewModelScope.launch {
             try {
                 val unlocked = container.session.isUnlocked.first()
@@ -134,8 +138,11 @@ class VaultViewModel(
                 }
                 container.vaultSession.touch()
                 container.requestSafBackup()
+                onDone()
             } catch (e: Exception) {
                 _message.value = UserError.generic(container.appContext, e.message)
+            } finally {
+                saving = false
             }
         }
     }
@@ -162,7 +169,7 @@ class VaultViewModel(
                 container.vaultRepository.restore(id)
                 container.vaultSession.touch()
                 container.requestSafBackup()
-                _message.value = UiMessage("Entry restored")
+                _message.value = UiMessage(container.appContext.getString(com.yishenghuang.keyic.R.string.entry_restored))
             } catch (e: Exception) {
                 _message.value = UserError.generic(container.appContext, e.message)
             }
@@ -176,7 +183,7 @@ class VaultViewModel(
                 container.vaultRepository.purge(id)
                 container.vaultSession.touch()
                 container.requestSafBackup()
-                _message.value = UiMessage("Permanently deleted")
+                _message.value = UiMessage(container.appContext.getString(com.yishenghuang.keyic.R.string.entry_purged))
             } catch (e: Exception) {
                 _message.value = UserError.generic(container.appContext, e.message)
             }
@@ -238,12 +245,12 @@ class VaultViewModel(
                     onError(UserError.vaultLocked(container.appContext).text)
                     return@launch
                 }
-                drafts.forEach { container.vaultRepository.create(it) }
+                container.importCsv(drafts)
                 container.vaultSession.touch()
                 container.requestSafBackup()
                 onDone(drafts.size)
             } catch (e: Exception) {
-                onError(e.message ?: UserError.importFailed(container.appContext).text)
+                onError(UserError.importFailed(container.appContext).text)
             }
         }
     }

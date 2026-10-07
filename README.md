@@ -22,10 +22,11 @@ Offline-first Android password manager. No account, no Keyic cloud, and **no `IN
 | `:app` | Compose UI, Autofill service, camera scan, WorkManager |
 | `:core` | Domain models, crypto helpers, CSV, matching, health |
 | `:data` | SQLCipher Room DB, session, settings, backup adapters |
+| `:keepass-android` | Private Commons Codec packaging and StAX API for KeePass on Android |
 
 ## Requirements
 
-- Android Studio (recent stable) + JDK 17 (Android Studio JBR is fine)
+- Android Studio + JDK 21 for the Gradle daemon (Android Studio JBR is fine); Gradle provisions the core module’s JDK 11 toolchain.
 - `minSdk` 26 · `targetSdk` 36
 
 ## Build

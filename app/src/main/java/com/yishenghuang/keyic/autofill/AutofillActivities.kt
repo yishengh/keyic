@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.yishenghuang.keyic.data.db.toDomain
 import com.yishenghuang.keyic.KeyicApp
 import com.yishenghuang.keyic.R
 import com.yishenghuang.keyic.core.crypto.TotpGenerator
@@ -50,7 +51,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class AutofillUnlockActivity : ComponentActivity() {
+class AutofillUnlockActivity : SecureAutofillActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -121,6 +122,7 @@ class AutofillUnlockActivity : ComponentActivity() {
         }
         val intent = Intent(this, AutofillFillActivity::class.java).apply {
             putExtra(KeyicAutofillService.EXTRA_ENTRY_ID, entry.id)
+            putExtra(KeyicAutofillService.EXTRA_VAULT_ID, com.yishenghuang.keyic.data.db.VaultDatabaseFactory.currentVaultId())
             putParsedExtras(parsed)
         }
         val pending = PendingIntent.getActivity(
@@ -144,55 +146,59 @@ class AutofillUnlockActivity : ComponentActivity() {
     }
 }
 
-class AutofillFillActivity : ComponentActivity() {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-
+class AutofillFillActivity : SecureAutofillActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val entryId = intent.getStringExtra(KeyicAutofillService.EXTRA_ENTRY_ID)
+        val vaultId = intent.getStringExtra(KeyicAutofillService.EXTRA_VAULT_ID)
         val parsed = intent.readParsedFields()
         val app = application as KeyicApp
-        if (entryId == null) {
-            setResult(Activity.RESULT_CANCELED)
-            finish()
-            return
-        }
-
-        scope.launch {
-            val entry = app.container.vaultRepository.getById(entryId)
-            if (entry == null || entry.deletedAt != null) {
-                Toast.makeText(this@AutofillFillActivity, "Entry unavailable", Toast.LENGTH_SHORT).show()
-                setResult(Activity.RESULT_CANCELED)
-                finish()
-                return@launch
+        if (entryId == null || vaultId == null) { finish(); return }
+        setContent {
+            KeyicTheme {
+                val scope = rememberCoroutineScope()
+                androidx.compose.material3.AlertDialog(
+                    onDismissRequest = { finish() },
+                    title = { Text(stringResource(R.string.autofill_confirm_target)) },
+                    text = { Text(stringResource(R.string.autofill_target_warning,
+                        getString(R.string.app_name), parsed.packageName.orEmpty(), parsed.webDomain ?: "—")) },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            scope.launch {
+                                try {
+                                    val settings = app.container.settingsRepository.get()
+                                    check(!app.container.session.shouldAutoLock(android.os.SystemClock.elapsedRealtime(), settings.autoLockSeconds))
+                                    app.container.session.withUnlockedVault(vaultId) { db, _, _ ->
+                                        val entry = db.vaultDao().getById(entryId)?.let { it.toDomain() }
+                                            ?: error("Entry unavailable")
+                                        check(app.container.autofillMatcher.match(parsed.packageName, parsed.webDomain,
+                                            listOf(entry), parsed.hasCardFields && !parsed.hasLoginFields).isNotEmpty())
+                                        val dataset = KeyicAutofillService.filledDataset(packageName, entry, parsed)
+                                        if (!entry.totpSecret.isNullOrBlank()) {
+                                            runCatching {
+                                                val code = TotpGenerator.generate(entry.totpSecret!!)
+                                                app.secureClipboard.copy("totp", code, settings.clipboardClearSeconds)
+                                            }
+                                        }
+                                        setResult(Activity.RESULT_OK, Intent().putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, dataset))
+                                    }
+                                } catch (_: Exception) {
+                                    setResult(Activity.RESULT_CANCELED)
+                                    Toast.makeText(this@AutofillFillActivity, R.string.autofill_entry_unavailable, Toast.LENGTH_LONG).show()
+                                }
+                                finish()
+                            }
+                        }) { Text(stringResource(R.string.action_continue)) }
+                    },
+                    dismissButton = { TextButton(onClick = { finish() }) { Text(stringResource(R.string.action_cancel)) } },
+                )
             }
-            val dataset: Dataset = KeyicAutofillService.filledDataset(
-                packageName,
-                entry,
-                parsed,
-            )
-            if (!entry.totpSecret.isNullOrBlank()) {
-                runCatching {
-                    val code = TotpGenerator.generate(entry.totpSecret!!)
-                    val clearSecs = app.container.settingsRepository.get().clipboardClearSeconds
-                    SecureClipboard(applicationContext, this).copy("totp", code, clearSecs)
-                    Toast.makeText(
-                        this@AutofillFillActivity,
-                        getString(R.string.autofill_totp_copied),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
-            }
-            // Do not bump updatedAt on fill — keeps ranking stable.
-            val reply = Intent().putExtra(AutofillManager.EXTRA_AUTHENTICATION_RESULT, dataset)
-            setResult(Activity.RESULT_OK, reply)
-            finish()
         }
     }
 }
 
 /** Pick another vault, then unlock and rematch for autofill. */
-class AutofillVaultPickActivity : ComponentActivity() {
+class AutofillVaultPickActivity : SecureAutofillActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -235,6 +241,7 @@ class AutofillVaultPickActivity : ComponentActivity() {
                                                 AutofillUnlockActivity::class.java,
                                             ).apply {
                                                 putParsedExtras(parsed)
+                                                addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
                                             }
                                             startActivity(unlock)
                                             finish()

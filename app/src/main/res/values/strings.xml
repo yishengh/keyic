@@ -216,7 +216,7 @@
     <string name="backup_no_folder">No sync folder linked</string>
     <string name="backup_choose_folder">Choose sync folder (SAF)</string>
     <string name="backup_auto">Auto-backup on changes</string>
-    <string name="backup_auto_sub">Writes keyic-autosync.keyic into the folder</string>
+    <string name="backup_auto_sub">Creates dated backups and keeps previous copies</string>
     <string name="backup_frequency">Backup frequency</string>
     <string name="backup_freq_6h">Every 6 hours</string>
     <string name="backup_freq_12h">Every 12 hours</string>
@@ -235,13 +235,13 @@
     <string name="about_title">About &amp; help</string>
     <string name="about_version_fmt">Version %1$s (%2$d)</string>
     <string name="about_version_unknown">Version unknown</string>
-    <string name="about_offline_promise">Offline by design: Keyic has no network permission, no account, and no Keyic cloud. Your vault is encrypted on this device (Argon2id + AES-GCM). Secrets stay local unless you export them.</string>
+    <string name="about_offline_promise">Offline by design: no network permission, account, or Keyic cloud. SQLCipher encrypts the local database. Argon2id and AES-GCM protect password-wrapped keys and encrypted backups. Exported files are under your control.</string>
     <string name="about_section_backup">Backup troubleshooting</string>
-    <string name="about_help_backup">1) Link a folder under Backup &amp; sync (Drive / OneDrive / local). 2) Set a sync passphrase (6+ characters) — this encrypts auto-backups. 3) Keep the vault unlocked when testing; scheduled backups retry if the vault is locked. 4) If status says “folder missing”, re-link the folder (Android may revoke SAF access). 5) Prefer encrypted .keyic over CSV. Recycle-bin items are not included in backups.</string>
+    <string name="about_help_backup">Link a folder and choose a sync passphrase. Automatic backups run only while the vault is unlocked; unavailable storage or a locked vault will be retried. Each successful backup creates a new file, keeping older copies. Manage old backups in your storage provider. Exports exclude the recycle bin. Restore replaces the current vault, including its recycle bin, so export a copy first. The .keyic file limit is 64 MB. Prefer .keyic for a complete Keyic backup; CSV excludes attachments and app-specific fields.</string>
     <string name="about_section_autofill">Autofill troubleshooting</string>
-    <string name="about_help_autofill">1) Settings → Autofill → open system settings and choose Keyic. 2) Unlock the vault (or use biometrics) when prompted. 3) For logins, store the app package or website domain on the entry. 4) Card forms prefer Card entries; use “Other vault…” if the login is in another vault. 5) After fill, linked 2FA codes are copied when available. Autofill never needs the network.</string>
+    <string name="about_help_autofill">Choose Keyic in Android Autofill settings. Store the exact website host or app package on each login entry; unrelated sites and lookalike names are not suggested. Card forms only use Card entries. Confirm the destination before filling: Keyic works offline and cannot verify website ownership or app signing identity. Use Other vault to switch and unlock another vault. Linked 2FA codes are copied when available.</string>
     <string name="about_section_lock">Lock &amp; clipboard</string>
-    <string name="about_help_lock">Idle auto-lock and “lock when leaving app” protect an unlocked session. Clipboard clear only removes text Keyic itself copied, so it won’t wipe something else you copied afterward.</string>
+    <string name="about_help_lock">Idle timeout and lock on leaving protect the vault. A system file picker may defer background locking until the idle timeout (up to 60 seconds when idle locking is disabled); reopen the operation after unlocking if needed. Clipboard clearing only removes the clip Keyic created. Android may block access in the background, so clearing is retried on return; process termination can prevent the timer from running. Biometrics require strong authentication; use the master password after enrollment changes or failures.</string>
     <string name="about_privacy_heading">Privacy</string>
     <string name="about_privacy_blurb">Full policy (opens in your browser — Keyic itself still has no network permission):</string>
     <string name="about_open_privacy">Open privacy policy</string>
@@ -257,7 +257,7 @@
     <string name="passphrase_min_6">Passphrase must be at least 6 characters</string>
     <string name="sync_folder_linked">Sync folder linked</string>
     <string name="sync_passphrase_title">Sync passphrase</string>
-    <string name="sync_passphrase_body">Protects keyic-autosync.keyic in the chosen folder (can differ from master password).</string>
+    <string name="sync_passphrase_body">Encrypts new backup files in the chosen folder. Keep the passphrase to restore them; it may differ from the master password. Older files are retained.</string>
     <string name="label_passphrase">Passphrase</string>
     <string name="set_sync_passphrase_first">Set a sync passphrase first</string>
 
@@ -390,4 +390,23 @@
     <string name="autofill_save_cancel">Not now</string>
     <string name="autofill_saved">Saved to vault</string>
     <string name="autofill_saved_title">Saved login</string>
+    <string name="operation_succeeded">Operation completed successfully.</string>
+    <string name="operation_failed_safe">Operation failed. Check the file, password, available space and folder access, then retry.</string>
+    <string name="error_vault_open">Unable to open this vault. Your data has been kept. Retry with your master password; do not clear app data.</string>
+    <string name="backup_passphrase_title">Backup passphrase</string>
+    <string name="restore_passphrase_title">Restore backup</string>
+    <string name="keepass_passphrase_title">KeePass password</string>
+    <string name="backup_passphrase_help">Use at least 8 characters. This passphrase protects the backup separately from your master password. Keep it somewhere safe.</string>
+    <string name="restore_replace_warning">Restoring replaces all entries and attachments in the current vault, including the recycle bin. Export a backup first if you need to keep them. Enter the backup passphrase. A failed restore leaves existing data unchanged.</string>
+    <string name="keepass_passphrase_help">Enter the KeePass database password. Import adds entries without replacing existing ones. New exports require at least 8 characters.</string>
+    <string name="password_updated">Master password updated.</string>
+    <string name="privacy_open_failed">No browser could open the privacy policy. Try again after installing or enabling a browser.</string>
+    <string name="autofill_entry_unavailable">This entry is no longer available. Unlock the vault and try Autofill again.</string>
+    <string name="autofill_confirm_target">Confirm Autofill destination</string>
+    <string name="autofill_target_warning">Fill %1$s into app %2$s for %3$s? Keyic works offline and cannot verify that this app owns the website. Continue only if you trust this destination.</string>
+    <string name="entry_restored">Entry restored.</string>
+    <string name="entry_purged">Entry permanently deleted.</string>
+    <string name="attachment_limits">Max 5 MB per file, 20 MB per entry. Attachments are encrypted in the vault. Exported attachments are unencrypted.</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
 </resources>

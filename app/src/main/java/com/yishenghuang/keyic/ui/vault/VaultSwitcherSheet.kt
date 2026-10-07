@@ -54,6 +54,7 @@ fun VaultSwitcherSheet(
 ) {
     val vaults by container.vaultRegistry.vaults.collectAsStateWithLifecycle(initialValue = emptyList())
     val activeId by container.vaultRegistry.activeVaultId.collectAsStateWithLifecycle(initialValue = null)
+    val unlocked by container.session.isUnlocked.collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -116,7 +117,7 @@ fun VaultSwitcherSheet(
                         IconButton(onClick = { renameTarget = vault }) {
                             Icon(Icons.Outlined.Edit, contentDescription = stringResource(R.string.rename_vault))
                         }
-                        if (vaults.size > 1) {
+                        if (vaults.size > 1 && unlocked && isActive) {
                             IconButton(onClick = { deleteTarget = vault }) {
                                 Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.action_delete))
                             }

@@ -19,6 +19,7 @@ data class CustomField(
  * Domain vault entry. Sensitive fields stay as String at the domain boundary;
  * UI should prefer short-lived copies and clear clipboard on a timer.
  */
+@kotlinx.serialization.Serializable
 data class VaultEntry(
     val id: String,
     val title: String,

@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <provider android:name="com.yishenghuang.keyic.data.TestDocumentsProvider"
+            android:authorities="com.yishenghuang.keyic.data.test.documents"
+            android:exported="true" android:permission="android.permission.MANAGE_DOCUMENTS"
+            android:grantUriPermissions="true" />
+    </application>
+</manifest>

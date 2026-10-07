@@ -15,43 +15,41 @@ class SecureClipboard(
     private val scope: CoroutineScope,
 ) {
     private var clearJob: Job? = null
-    @Volatile
-    private var pendingClearValue: String? = null
+    private var pendingToken: String? = null
+    private var expiresAt: Long = Long.MAX_VALUE
 
     fun copy(label: String, value: String, clearAfterSeconds: Int = 30) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val token = java.util.UUID.randomUUID().toString()
         val clip = ClipData.newPlainText(label, value)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            clip.description.extras = PersistableBundle().apply {
-                putBoolean("android.content.extra.IS_SENSITIVE", true)
-            }
+        clip.description.extras = PersistableBundle().apply {
+            putBoolean("android.content.extra.IS_SENSITIVE", true)
+            putString("com.yishenghuang.keyic.CLIP_TOKEN", token)
         }
         clipboard.setPrimaryClip(clip)
-        pendingClearValue = value
+        pendingToken = token
         clearJob?.cancel()
-        if (clearAfterSeconds > 0) {
-            clearJob = scope.launch {
-                delay(clearAfterSeconds * 1000L)
-                clearIfStillOurs(clipboard, value)
-            }
+        expiresAt = if (clearAfterSeconds > 0) android.os.SystemClock.elapsedRealtime() + clearAfterSeconds * 1000L else Long.MAX_VALUE
+        if (clearAfterSeconds > 0) clearJob = scope.launch {
+            delay(clearAfterSeconds * 1000L)
+            clearExpired()
         }
     }
 
-    private fun clearIfStillOurs(clipboard: ClipboardManager, expected: String) {
+    /** Android may deny background clipboard access; retry as soon as a Keyic activity resumes. */
+    fun clearExpired() {
+        if (android.os.SystemClock.elapsedRealtime() < expiresAt) return
+        val expected = pendingToken ?: return
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         try {
-            val current = clipboard.primaryClip
-                ?.takeIf { it.itemCount > 0 }
-                ?.getItemAt(0)
-                ?.coerceToText(context)
-                ?.toString()
-            if (current != expected) return
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                clipboard.clearPrimaryClip()
-            } else {
-                clipboard.setPrimaryClip(ClipData.newPlainText("", ""))
+            val description = clipboard.primaryClipDescription ?: return
+            if (description.extras?.getString("com.yishenghuang.keyic.CLIP_TOKEN") == expected) {
+                if (Build.VERSION.SDK_INT >= 28) clipboard.clearPrimaryClip()
+                else clipboard.setPrimaryClip(ClipData.newPlainText("", ""))
             }
-        } finally {
-            if (pendingClearValue == expected) pendingClearValue = null
+            pendingToken = null
+        } catch (_: SecurityException) {
+            // Keep the token (never the secret text) for the next foreground retry.
         }
     }
 }

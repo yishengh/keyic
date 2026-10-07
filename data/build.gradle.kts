@@ -20,6 +20,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    packaging.resources.excludes += setOf(
+        "META-INF/INDEX.LIST", "META-INF/io.netty.versions.properties",
+        "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "META-INF/DEPENDENCIES",
+        "META-INF/LICENSE*", "META-INF/NOTICE*",
+    )
 }
 
 ksp {
@@ -31,7 +36,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.room.runtime)
+    api(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.sqlcipher.android)
@@ -40,7 +45,9 @@ dependencies {
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.datastore.preferences)
     implementation("androidx.documentfile:documentfile:1.0.1")
-    implementation(libs.keepass.jackson)
+    implementation(project(path = ":keepass-android", configuration = "shadow"))
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.android)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

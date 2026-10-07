@@ -88,7 +88,7 @@ fun SetupScreen(viewModel: LockViewModel) {
                 IconButton(onClick = { visible = !visible }) {
                     Icon(
                         if (visible) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
-                        contentDescription = null,
+                        contentDescription = stringResource(if (visible) R.string.hide_password else R.string.show_password),
                     )
                 }
             },
@@ -142,6 +142,7 @@ fun LockScreen(viewModel: LockViewModel) {
     var visible by remember { mutableStateOf(false) }
     var showVaultSwitcher by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val resources = androidx.compose.ui.platform.LocalResources.current
     val app = context.applicationContext as KeyicApp
     val settings by app.container.settingsRepository.settings
         .collectAsStateWithLifecycle(initialValue = com.yishenghuang.keyic.core.model.AppSettings())
@@ -149,7 +150,7 @@ fun LockScreen(viewModel: LockViewModel) {
     val activeId by app.container.vaultRegistry.activeVaultId.collectAsStateWithLifecycle(initialValue = null)
     val activeName = vaults.find { it.id == activeId }?.name
         ?: stringResource(R.string.vault_default_name)
-    val bioEnabled = settings.biometricEnabled && app.container.keyManager.isBiometricEnabled()
+    val bioEnabled = app.container.keyManager.isBiometricEnabled()
     val activity = context.findFragmentActivity()
 
     LaunchedEffect(bioEnabled, activeId) {
@@ -162,7 +163,7 @@ fun LockScreen(viewModel: LockViewModel) {
                     app.endExternalUi()
                     viewModel.unlockWithDbKey(it)
                 },
-                onError = { app.endExternalUi() },
+                onError = { message -> app.endExternalUi(); if (message != resources.getString(R.string.error_cancelled)) viewModel.biometricFailed() },
             )
         }
     }
@@ -188,7 +189,7 @@ fun LockScreen(viewModel: LockViewModel) {
                 IconButton(onClick = { visible = !visible }) {
                     Icon(
                         if (visible) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
-                        contentDescription = null,
+                        contentDescription = stringResource(if (visible) R.string.hide_password else R.string.show_password),
                     )
                 }
             },
@@ -226,7 +227,7 @@ fun LockScreen(viewModel: LockViewModel) {
                             app.endExternalUi()
                             viewModel.unlockWithDbKey(it)
                         },
-                        onError = { app.endExternalUi() },
+                        onError = { message -> app.endExternalUi(); if (message != resources.getString(R.string.error_cancelled)) viewModel.biometricFailed() },
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),

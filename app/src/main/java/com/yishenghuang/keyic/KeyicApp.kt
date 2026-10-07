@@ -17,6 +17,7 @@ class KeyicApp : Application() {
         private set
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    val secureClipboard by lazy { com.yishenghuang.keyic.ui.util.SecureClipboard(this, scope) }
     private var startedActivities = 0
     private var lockJob: Job? = null
 
@@ -27,11 +28,24 @@ class KeyicApp : Application() {
     fun beginExternalUi() {
         suppressBackgroundLock++
         lockJob?.cancel()
-        lockJob = null
+        lockJob = scope.launch {
+            val seconds = container.settingsRepository.get().autoLockSeconds
+            delay((if (seconds > 0) seconds else 60) * 1000L)
+            if (startedActivities == 0) container.vaultSession.lock()
+        }
     }
 
     fun endExternalUi() {
         suppressBackgroundLock = (suppressBackgroundLock - 1).coerceAtLeast(0)
+    }
+
+    fun onVaultInteraction() {
+        scope.launch {
+            val timeout = container.settingsRepository.get().autoLockSeconds
+            if (container.session.shouldAutoLock(android.os.SystemClock.elapsedRealtime(), timeout)) {
+                container.session.lock()
+            } else container.session.touch()
+        }
     }
 
     override fun onCreate() {
@@ -62,12 +76,15 @@ class KeyicApp : Application() {
                     startedActivities = 0
                     lockJob?.cancel()
                     lockJob = scope.launch {
-                        delay(1_200)
                         val settings = container.settingsRepository.get()
-                        if (settings.lockOnBackground &&
-                            startedActivities == 0 &&
-                            suppressBackgroundLock == 0
-                        ) {
+                        val timeout = when {
+                            suppressBackgroundLock > 0 -> (if (settings.autoLockSeconds > 0) settings.autoLockSeconds else 60) * 1000L
+                            settings.lockOnBackground -> 1_200L
+                            settings.autoLockSeconds > 0 -> settings.autoLockSeconds * 1000L
+                            else -> return@launch
+                        }
+                        delay(timeout)
+                        if (startedActivities == 0) {
                             container.vaultSession.lock()
                         }
                     }
@@ -75,7 +92,7 @@ class KeyicApp : Application() {
             }
 
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
-            override fun onActivityResumed(activity: Activity) = Unit
+            override fun onActivityResumed(activity: Activity) { secureClipboard.clearExpired() }
             override fun onActivityPaused(activity: Activity) = Unit
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
             override fun onActivityDestroyed(activity: Activity) = Unit

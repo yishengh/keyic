@@ -46,9 +46,14 @@ object VaultDatabaseFactory {
                     VaultMigrations.MIGRATION_2_4,
                     VaultMigrations.MIGRATION_3_4,
                 )
-                .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
                 .build()
-            db.openHelper.writableDatabase
+            try {
+                db.openHelper.writableDatabase
+            } catch (failure: Exception) {
+                runCatching { db.close() }
+                passphrase.fill(0)
+                throw failure
+            }
             livePassphrase = passphrase
             openVaultId = vaultId
             instance = db
@@ -76,10 +81,13 @@ object VaultDatabaseFactory {
     }
 
     private fun closeLocked() {
-        instance?.close()
-        instance = null
-        openVaultId = null
-        livePassphrase?.fill(0)
-        livePassphrase = null
+        try {
+            instance?.close()
+        } finally {
+            instance = null
+            openVaultId = null
+            livePassphrase?.fill(0)
+            livePassphrase = null
+        }
     }
 }

@@ -40,7 +40,8 @@ const val KEYIC_PRIVACY_URL = "https://keyic-privacy.netlify.app/"
 @Composable
 fun AboutHelpScreen(onBack: () -> Unit) {
     val context = LocalContext.current
-    val versionLabel = remember {
+    val resources = androidx.compose.ui.platform.LocalResources.current
+    val versionLabel = remember(resources) {
         runCatching {
             val info = if (Build.VERSION.SDK_INT >= 33) {
                 context.packageManager.getPackageInfo(
@@ -58,8 +59,8 @@ fun AboutHelpScreen(onBack: () -> Unit) {
                 @Suppress("DEPRECATION")
                 info.versionCode.toLong()
             }
-            context.getString(R.string.about_version_fmt, name, code)
-        }.getOrElse { context.getString(R.string.about_version_unknown) }
+            resources.getString(R.string.about_version_fmt, name, code)
+        }.getOrElse { resources.getString(R.string.about_version_unknown) }
     }
 
     Column(
@@ -143,6 +144,8 @@ fun AboutHelpScreen(onBack: () -> Unit) {
                     context.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(KEYIC_PRIVACY_URL)),
                     )
+                }.onFailure {
+                    android.widget.Toast.makeText(context, R.string.privacy_open_failed, android.widget.Toast.LENGTH_LONG).show()
                 }
             },
             modifier = Modifier.fillMaxWidth(),

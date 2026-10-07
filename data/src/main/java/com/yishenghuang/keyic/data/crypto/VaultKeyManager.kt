@@ -36,7 +36,13 @@ class VaultKeyManager(
     fun setupWithPassword(masterPassword: CharArray): ByteArray {
         val dbKey = ByteArray(32).also { secureRandom.nextBytes(it) }
         val salt = ByteArray(16).also { secureRandom.nextBytes(it) }
-        val wrappingKey = deriveKey(masterPassword, salt)
+        var wrappingKey = ByteArray(0)
+        try {
+            wrappingKey = deriveKey(masterPassword, salt)
+        } catch (failure: Exception) {
+            masterPassword.fill('\u0000')
+            throw failure
+        }
         try {
             val wrapped = aesGcmEncrypt(wrappingKey, dbKey)
             prefs.edit()
@@ -45,24 +51,26 @@ class VaultKeyManager(
                 .putInt(KEY_ARGON_M, MEMORY_KIB)
                 .putInt(KEY_ARGON_T, ITERATIONS)
                 .putInt(KEY_ARGON_P, PARALLELISM)
-                .apply()
+                .commit().also { check(it) { "Key metadata could not be saved" } }
             return dbKey.copyOf()
         } finally {
+            dbKey.fill(0)
             wrappingKey.fill(0)
             masterPassword.fill('\u0000')
         }
     }
 
     fun unlockWithPassword(masterPassword: CharArray): ByteArray? {
-        val salt = prefs.getString(KEY_SALT, null)?.let { unb64(it) } ?: return null
-        val wrapped = prefs.getString(KEY_WRAPPED_DB, null)?.let { unb64(it) } ?: return null
-        val wrappingKey = deriveKey(masterPassword, salt)
+        var wrappingKey: ByteArray? = null
         return try {
+            val salt = prefs.getString(KEY_SALT, null)?.let { unb64(it) } ?: return null
+            val wrapped = prefs.getString(KEY_WRAPPED_DB, null)?.let { unb64(it) } ?: return null
+            wrappingKey = deriveKey(masterPassword, salt)
             aesGcmDecrypt(wrappingKey, wrapped)
-        } catch (_: Exception) {
+        } catch (_: javax.crypto.AEADBadTagException) {
             null
         } finally {
-            wrappingKey.fill(0)
+            wrappingKey?.fill(0)
             masterPassword.fill('\u0000')
         }
     }
@@ -144,8 +152,9 @@ class VaultKeyManager(
             return false
         }
         val salt = ByteArray(16).also { secureRandom.nextBytes(it) }
-        val wrappingKey = deriveKey(newPassword.copyOf(), salt)
+        var wrappingKey: ByteArray? = null
         return try {
+            wrappingKey = deriveKey(newPassword, salt)
             val wrapped = aesGcmEncrypt(wrappingKey, currentDbKey)
             prefs.edit()
                 .putString(KEY_SALT, b64(salt))
@@ -153,13 +162,12 @@ class VaultKeyManager(
                 .putInt(KEY_ARGON_M, MEMORY_KIB)
                 .putInt(KEY_ARGON_T, ITERATIONS)
                 .putInt(KEY_ARGON_P, PARALLELISM)
-                .apply()
+                .commit()
             // Biometric wrap encrypts the same DB key — no re-wrap needed.
-            true
         } catch (_: Exception) {
             false
         } finally {
-            wrappingKey.fill(0)
+            wrappingKey?.fill(0)
             newPassword.fill('\u0000')
         }
     }
@@ -229,7 +237,7 @@ class VaultKeyManager(
                     )
                 }
             }
-            .setIsStrongBoxBacked(tryStrongBox())
+            .apply { if (android.os.Build.VERSION.SDK_INT >= 28) setIsStrongBoxBacked(true) }
             .build()
         return try {
             keyGenerator.init(spec)

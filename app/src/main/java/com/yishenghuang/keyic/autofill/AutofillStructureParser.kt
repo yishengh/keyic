@@ -114,6 +114,7 @@ object AutofillStructureParser {
         var cardCvvId: AutofillId? = null
         var cardHolderId: AutofillId? = null
         var webDomain: String? = null
+        val domains = mutableSetOf<String>()
         val packageName = structure.activityComponent?.packageName
 
         for (i in 0 until structure.windowNodeCount) {
@@ -122,6 +123,7 @@ object AutofillStructureParser {
                 if (webDomain == null) {
                     webDomain = node.webDomain
                 }
+                node.webDomain?.let { domains += it.lowercase(Locale.ROOT).removePrefix("www.") }
                 val id = node.autofillId ?: return@traverse
                 when (classify(node)) {
                     FieldKind.Password -> if (passwordId == null) passwordId = id
@@ -135,6 +137,7 @@ object AutofillStructureParser {
             }
         }
 
+        if (domains.size > 1) return ParsedAutofillFields(null, null, null, null, null, null, packageName, null)
         return ParsedAutofillFields(
             usernameId = usernameId,
             passwordId = passwordId,
@@ -151,12 +154,14 @@ object AutofillStructureParser {
         var username = ""
         var password = ""
         var webDomain: String? = null
+        val domains = mutableSetOf<String>()
         val packageName = structure.activityComponent?.packageName
 
         for (i in 0 until structure.windowNodeCount) {
             val root = structure.getWindowNodeAt(i).rootViewNode ?: continue
             traverse(root) { node ->
                 if (webDomain == null) webDomain = node.webDomain
+                node.webDomain?.let { domains += it.lowercase(Locale.ROOT).removePrefix("www.") }
                 val text = nodeText(node) ?: return@traverse
                 when (classify(node)) {
                     FieldKind.Password -> if (password.isEmpty()) password = text
@@ -165,7 +170,7 @@ object AutofillStructureParser {
                 }
             }
         }
-        if (username.isBlank() && password.isBlank()) return null
+        if (domains.size > 1 || (username.isBlank() && password.isBlank())) return null
         return ExtractedCredentials(username, password, packageName, webDomain)
     }
 

@@ -206,6 +206,7 @@ private fun ScanCaptureScreen(
     onWifi: (ssid: String, password: String, security: String, hidden: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = androidx.compose.ui.platform.LocalResources.current
     var permissionGranted by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
@@ -217,7 +218,7 @@ private fun ScanCaptureScreen(
     ) { granted ->
         permissionGranted = granted
         if (!granted) {
-            Toast.makeText(context, context.getString(R.string.scan_camera_denied), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, resources.getString(R.string.scan_camera_denied), Toast.LENGTH_SHORT).show()
             onCancel()
         }
     }
@@ -315,6 +316,7 @@ private fun ScanFrameOverlay(modifier: Modifier = Modifier) {
     }
 }
 
+@androidx.annotation.OptIn(androidx.camera.core.ExperimentalGetImage::class)
 @Composable
 private fun CameraAnalyzer(
     mode: String,
@@ -331,6 +333,7 @@ private fun CameraAnalyzer(
     onError: (String) -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = androidx.compose.ui.platform.LocalResources.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val previewView = remember {
         PreviewView(context).apply {
@@ -508,7 +511,7 @@ private fun CameraAnalyzer(
                     analysis,
                 )
             } catch (e: Exception) {
-                onError(e.message ?: context.getString(R.string.scan_camera_failed))
+                onError(e.message ?: resources.getString(R.string.scan_camera_failed))
             }
         }, mainExecutor)
 

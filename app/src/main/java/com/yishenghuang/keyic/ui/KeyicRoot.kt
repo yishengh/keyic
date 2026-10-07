@@ -5,6 +5,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -48,7 +50,7 @@ fun KeyicRoot(container: AppContainer) {
         .collectAsStateWithLifecycle(initialValue = false)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val clipboard = remember { SecureClipboard(context, scope) }
+    val clipboard = (context.applicationContext as com.yishenghuang.keyic.KeyicApp).secureClipboard
     val settings by container.settingsRepository.settings
         .collectAsStateWithLifecycle(initialValue = AppSettings())
 
@@ -137,16 +139,17 @@ private fun MainNav(
     }
 
     androidx.compose.material3.Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
                 Snackbar(snackbarData = data)
             }
         },
-    ) { _ ->
+    ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = Route.Home.path,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
         ) {
             composable(Route.Home.path) {
                 HomeShell(
