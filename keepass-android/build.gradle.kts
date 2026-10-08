@@ -18,6 +18,10 @@ dependencies {
 // No crypto algorithms or KeePass implementation are modified.
 tasks.shadowJar {
     relocate("org.apache.commons.codec", "com.yishenghuang.keyic.internal.codec")
+    // AndroidX supplies ListenableFuture separately in release builds; isolate
+    // KeePass's bundled Guava rather than shipping duplicate public classes.
+    relocate("com.google.common", "com.yishenghuang.keyic.internal.guava")
+    relocate("com.google.thirdparty", "com.yishenghuang.keyic.internal.guava.thirdparty")
     mergeServiceFiles()
     exclude("META-INF/versions/**", "module-info.class")
 }
