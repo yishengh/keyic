@@ -23,4 +23,12 @@ Improved vault reliability, backup and restore, attachment preservation, and Kee
 
 ## Play status
 
-Production access is granted. Submission outcome will be recorded after the Console operation; local artifact validation does not mean that Google Play has approved or published the app.
+On 2026-10-07 (America/New_York), the user completed the AAB upload and authorized continuation. Google Play recognized the uploaded artifact as version `3 (1.0.2)`.
+
+- Added all 178 production countries/regions to match the existing closed-testing distribution. This resolved the blocking validation error (production previously targeted no countries).
+- Console validation retained only two non-blocking diagnostic warnings: no deobfuscation mapping (R8/proguard is not enabled) and no native debug symbols for bundled native code.
+- Saved and submitted exactly three changes: production `1.0.2 (3)` full rollout, 177 named countries/regions, and rest of world.
+- Confirmed Console status: **Changes in review**. Automated quick checks were still running; changes proceed to review when those checks pass. This is a submission confirmation, not approval or proof that the app is live.
+- Existing **Managed publishing off** setting retained, so an approved release publishes automatically.
+- Console: https://play.google.com/console/u/3/developers/4837891265549596871/app/4976015299072387130/publishing
+- Local submission screenshot: `build/production-submitted.jpg` (build outputs are not committed).
